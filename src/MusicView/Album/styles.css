@@ -1,0 +1,7 @@
+.mv-album-track:hover {
+    background-color: beige;
+    border-radius: 10%;
+}
+.mv-album-artist-detail:hover {
+    text-decoration: underline;
+}

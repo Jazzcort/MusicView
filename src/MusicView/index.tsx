@@ -29,7 +29,7 @@ export default function MusicView() {
                         <Route path="/Login" element={<Login />} />
                         <Route path="/Profile" element={<Profile />} />
                         <Route path="/Search" element={<Search />} />
-                        <Route path="/Album" element={<Album />} />
+                        <Route path="/Album/:albumId/*" element={<Album />} />
                         <Route path="/Artist/:artistId/*" element={<Artist />} />
                         <Route path="/Error" element={<Error />} />
                     </Routes>
