@@ -1,7 +1,15 @@
-export default function Login() {
+import "./styles.css";
+import { Route, Routes } from "react-router-dom";
+import Login from "./Login";
+import SignUp from "./SignUp";
+export default function LoginMain() {
+
     return (
         <div id="mv-login">
-            <h1>Login</h1>
+            <Routes>
+                <Route path="/" element={<Login />}/>
+                <Route path="Signup" element={<SignUp />} />
+            </Routes>
         </div>
-    )
+    );
 }

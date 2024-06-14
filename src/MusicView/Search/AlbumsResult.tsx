@@ -1,4 +1,5 @@
 import { LuDot } from "react-icons/lu";
+import { Link } from "react-router-dom";
 export default function AlbumsResult({ albums }: { albums: any[] }) {
     return (
         <>
@@ -23,9 +24,8 @@ function Album({ album }: { album: any }) {
             <div className="card-body">
                 <h5 className="card-title">{album.name}</h5>
                 <p className="card-text">{album.release_date.slice(0, 4)} <LuDot /> {album.artists[0].name}</p>
-                <a href="#" className="btn btn-primary">
-                    Go somewhere
-                </a>
+                <Link className="mv-search-button btn" to={`/Album/${album.id}`}>To Album</Link>
+                
             </div>
         </div>
     );

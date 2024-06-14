@@ -18,20 +18,26 @@ import store from "./store";
 import { Provider } from "react-redux";
 import Error from "./Error";
 import Artist from "./Artist";
+import Navbar from "./Navbar";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import useSession from "../hook/useSession";
 export default function MusicView() {
+
     return (
         <BrowserRouter>
             <Provider store={store}>
-                <div id="mv-entry" className="h-100 m-1">
+                <div id="mv-entry" style={{height: "100vh"}}>
+                    <Navbar />
                     <Routes>
                         <Route path="/" element={<Navigate to={"Home"} />} />
                         <Route path="/Home" element={<Home />} />
-                        <Route path="/Login" element={<Login />} />
-                        <Route path="/Profile" element={<Profile />} />
+                        <Route path="/Login/*" element={<Login />} />
+                        <Route path="/Profile/:userId/*" element={<Profile />} />
                         <Route path="/Search" element={<Search />} />
                         <Route path="/Album/:albumId/*" element={<Album />} />
                         <Route path="/Artist/:artistId/*" element={<Artist />} />
                         <Route path="/Error" element={<Error />} />
+                        <Route path="*" element={<Navigate to={"Home"}/>}/>
                     </Routes>
                 </div>
             </Provider>

@@ -1,0 +1,25 @@
+#mv-navbar {
+    /* position: absolute; */
+    /* position: sticky; */
+    background-color: #A3C9A8;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    position: sticky; 
+    top: 0;
+    z-index: 500;
+}
+
+#mv-navbar button {
+    height: fit-content;
+    border-color: black;
+}
+
+#mv-navbar button:hover {
+    background-color: aliceblue;
+}
+
+.mv-navbar-icon:hover {
+    color: #fff;
+}
+

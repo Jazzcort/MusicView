@@ -1,0 +1,28 @@
+#mv-login {
+    background-color: var(--mv-background-color);
+    height: 100%;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.mv-login-input-box {
+    /* min-width: 200px; */
+    width: 40%;
+}
+
+.mv-login-input-box-button {
+    display: flex;
+}
+
+.mv-login-input-box-button button {
+    background-color: var(--mv-button-color);
+    color: aliceblue;
+    width: 100%;
+}
+
+.mv-login-input-box-button button:hover {
+    background-color: wheat;
+}

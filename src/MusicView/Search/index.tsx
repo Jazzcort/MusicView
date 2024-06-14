@@ -1,79 +1,50 @@
-import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateToken } from "../Login/reducer";
 import search from "../api/search";
 import { Link } from "react-router-dom";
 import ArtistResult from "./ArtistResult";
 import AlbumsResult from "./AlbumsResult";
 import { useNavigate } from "react-router-dom";
 import { setError } from "../Error/errorReducer";
-import { renewToken } from "../Login/reducer";
-import { useAppDispatch } from "../store";
 import TracksResult from "./TracksResult";
-import useToken from "../../hook/useToken";
+import useQueryToken from "../../hook/useQueryToken";
+import { setQuery, setResult } from "./searchReducer";
+import "./styles.css"
 
 export default function Search() {
-    const dispatch = useAppDispatch();
-    const [query, setQuery] = useState("");
-    const [result, setResult] = useState<any>({});
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [token2, updateToken2] = useToken();
+    const {query, result} = useSelector((state: any) => state.searchReducer);
 
-    const { token } = useSelector((state: any) => state.tokenReducer);
-    console.log(token, "search");
-    console.log(token2, "token2");
+    const {
+        data: token,
+        isError: tokenIsError,
+        error: tokenError,
+    } = useQueryToken();
 
-    const getTokenRenewal = async () => {
-        await dispatch(renewToken())
-            .unwrap()
-            .catch((e) => {
-                dispatch(setError(e));
-                navigate("/Error");
-            });
-    };
-
-    useEffect(() => {
-        if (!token) {
-            dispatch(renewToken())
-                .unwrap()
-                .catch((e) => {
-                    dispatch(setError(e));
-                    navigate("/Error");
-                });
-        }
-    }, []);
+    if (tokenIsError) {
+        dispatch(setError(tokenError.message));
+        navigate("./Error");
+    }
 
     const handleSearchClick = async () => {
         try {
             const res = await search(query ? query : "hot", "", token);
-            console.log(res);
-            setResult(res.data);
+            dispatch(setResult(res.data));
         } catch (e: any) {
-            if (e.name === "AxiosError" && e.response.status === 401) {
-                await getTokenRenewal();
-                try {
-                    const res = await search(query ? query : "hot", "", token);
-                    setResult(res.data);
-                } catch (e) {
-                    setError(e);
-                    navigate("/Error");
-                }
-            } else {
-                setError(e);
-                navigate("/Error");
-            }
+            setError(e);
+            navigate("/Error");
         }
     };
 
     return (
-        <div id="mv-search">
+        <div id="mv-search" className="p-2">
             <h1>Search</h1>
             <Link to={"/Home"}>Homw</Link>
             <Link to={"/Album"}>Search</Link>
             <input
                 className="form-control"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => dispatch(setQuery(e.target.value))}
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
                         handleSearchClick();

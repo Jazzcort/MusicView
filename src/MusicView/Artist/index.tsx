@@ -57,6 +57,7 @@ export default function Artist() {
         queryFn: () => {
             return getArtistTopTracks(artistId, queryToken.data);
         },
+        staleTime: 3300000
     });
 
     if (topTracksIsError) {
@@ -73,6 +74,7 @@ export default function Artist() {
         queryFn: () => {
             return getArtistAlbum(artistId, queryToken.data);
         },
+        staleTime: 3300000
     });
 
     if (albumIsError) {

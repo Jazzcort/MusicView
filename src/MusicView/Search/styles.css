@@ -1,0 +1,15 @@
+#mv-search .mv-search-button {
+    background-color: var(--mv-button-color);
+    color: floralwhite;
+    font-weight: 600;
+}
+
+#mv-search .mv-search-button:hover {
+    background-color: antiquewhite;
+    color:black;
+}
+
+#mv-search .mv-search-card {
+    background-color: floralwhite;
+}
+

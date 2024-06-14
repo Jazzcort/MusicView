@@ -15,7 +15,7 @@ const querryClient = new QueryClient();
 function App() {
     return (
         <QueryClientProvider client={querryClient}>
-            <div className="App h-100">
+            <div className="App" style={{height: "100vh"}}>
                 <MusicView />
             </div>
         </QueryClientProvider>

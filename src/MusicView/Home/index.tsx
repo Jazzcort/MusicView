@@ -1,19 +1,30 @@
-import { Link } from "react-router-dom"
-import useToken from "../../hook/useToken"
-import useQueryToken from "../../hook/useQueryToken";
+import { Link } from "react-router-dom";
+import useSession from "../../hook/useSession";
+import { useQuery } from "@tanstack/react-query";
+import "./styles.css";
+import useUser from "../../hook/useUser";
 export default function Home() {
-    const query = useQueryToken();
-    const [token, updateToken] = useToken();
+    const {
+        data: session,
+        isError: sessionDataIsError,
+        isFetching,
+    } = useSession();
+
+
+
     return (
         <div id="mv-home">
-            <h1>Home</h1>
-            <Link to={"/Search"}>Search</Link>
-            <p>{token}</p>
-            <button onClick={updateToken} >renew token</button>
-
-            <p>from query: {query?.data}</p>
-
+            <h1>Welcome to MusicView</h1>
+            <p>{JSON.stringify(session)}</p>
+            {!session && (
+                <Link className="mv-home-button btn m-2" to="/Login">
+                    Login
+                </Link>
+            )}
+            <Link className="mv-home-button btn m-2" to={"/Search"}>
+                Search For Artists, Albums, or Songs
+            </Link>
 
         </div>
-    )
+    );
 }
