@@ -8,7 +8,7 @@ import Comments from "./Comment";
 
 export default function ArtistComments() {
     const { data: session } = useSession();
-    const { data: userData, isFetched: userDataIsFatched } = useUser(session);
+    const { data: userData, isFetched: userDataIsFatched } = useUser(session.session_id);
     const [comment, setComment] = useState("");
     const [errMessage, setErrMessage] = useState("");
     const { artistId } = useParams();
