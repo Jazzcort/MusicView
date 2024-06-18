@@ -35,7 +35,7 @@ export default function Navbar() {
                     {/* <FaCrow className="fs-2 m-2 mv-navbar-icon" /> */}
                     <div className="dropdown">
                         <button
-                            className="btn btn-secondary dropdown-toggle"
+                            className="btn btn-secondary"
                             type="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
@@ -46,11 +46,6 @@ export default function Navbar() {
                             <li>
                                 <a className="dropdown-item" onClick={() => {navigate(`/Profile/${userData.id.$oid}`)}}>
                                     Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a className="dropdown-item" href="#">
-                                    Another action
                                 </a>
                             </li>
                             <li>

@@ -13,7 +13,7 @@ export default function Profile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { data: session } = useSession();
-    const { data: userData, isLoading: userDataIsLoading } = useUser(session);
+    const { data: userData, isFetched: useDataIsFetched } = useUser(session);
 
     const {
         data: profileData,
@@ -21,22 +21,30 @@ export default function Profile() {
         isLoading: profileDataIsLoading,
         error: profileDataError,
     } = useQuery({
-        queryKey: ["profile"],
+        queryKey: ["profile", userId? userId: ""],
         queryFn: () => {
             return searchOtherUser(userId);
         },
+        enabled: userId? true: false
     });
 
     if (profileDataIsLoading) {
-        return <Suspense />;
+        return (
+            <div
+                style={{ height: "100%" }}
+                className="d-flex align-items-center justify-content-center"
+            >
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
     }
 
     if (profileDataIsError) {
         dispatch(setError(profileDataError.message));
         navigate("/Error");
     }
-
-    console.log(userDataIsLoading);
 
     return (
         <div id="mv-profile">
@@ -49,9 +57,9 @@ export default function Profile() {
                         style={{ height: "320px" }}
                         src={defaultImage}
                     />
-                    {/* <p>{JSON.stringify(userData?.id)}</p>
-                    <p>{JSON.stringify(profileData?.id)}</p> */}
-                    {userDataIsLoading || userData?.id.$oid !== profileData?.id.$oid ? (
+                    {/* <p>{JSON.stringify(userData?.id)}</p> */}
+                    {/* <p>{JSON.stringify(profileData?.id)}</p> */}
+                    {(useDataIsFetched && !userData) || userData?.id.$oid !== profileData?.id.$oid ? (
                         <div>
                             <h2>{profileData?.username}</h2>
                         </div>

@@ -70,6 +70,7 @@ export default function SignUp() {
         console.log(hash, salt);
         try {
             const res = await signup(signUpInfo);
+            
             console.log(res);
         } catch (e: any) {
             setSignUpError("Email or Username has already been registered")

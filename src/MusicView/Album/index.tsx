@@ -31,12 +31,26 @@ export default function Album() {
         data: albumData,
         isError: albumIsError,
         error: albumError,
+        isLoading: albumIsLoading,
     } = useQuery({
         queryKey: ["album", albumId],
         queryFn: () => {
             return getAlbumWithId(albumId, token);
         },
     });
+
+    if (albumIsLoading) {
+        return (
+            <div
+                style={{ height: "100%" }}
+                className="d-flex align-items-center justify-content-center"
+            >
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
 
     if (albumIsError) {
         dispatch(setError(albumError.message));
@@ -66,7 +80,13 @@ export default function Album() {
                     <p>
                         <span>by </span>
                         {albumData?.data.artists.map((artist: any) => (
-                            <span key={artist.id} className="mv-album-artist-detail fw-bold" onClick={() => { navigate(`/Artist/${artist.id}`) }}>
+                            <span
+                                key={artist.id}
+                                className="mv-album-artist-detail fw-bold"
+                                onClick={() => {
+                                    navigate(`/Artist/${artist.id}`);
+                                }}
+                            >
                                 {artist.name}
                             </span>
                         ))}
