@@ -38,9 +38,7 @@ export default function Search() {
 
     return (
         <div id="mv-search" className="p-2">
-            <h1>Search</h1>
-            <Link to={"/Home"}>Homw</Link>
-            <Link to={"/Album"}>Search</Link>
+            <h1>Search for some music</h1>
             <input
                 className="form-control"
                 value={query}
@@ -54,7 +52,6 @@ export default function Search() {
             <button className="btn btn-primary" onClick={handleSearchClick}>
                 Search
             </button>
-            <p>{token}</p>
             <ArtistResult
                 artists={result.artists ? result.artists.items : []}
             />
