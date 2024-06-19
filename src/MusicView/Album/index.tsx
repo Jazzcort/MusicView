@@ -8,14 +8,18 @@ import { useQuery } from "@tanstack/react-query";
 import { getAlbumWithId } from "../api/search";
 import { LuDot } from "react-icons/lu";
 import { getDurationFormat } from "../../helper";
+import { useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import "./styles.css";
+import AlbumDetails from "./AlbumDetails";
+import AlbumComments from "./AlbumComments";
 
 const defaultImage = "/images/logic-board.jpg";
 export default function Album() {
     const { albumId } = useParams();
-    console.log(albumId);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     const {
         data: token,
         isError: tokenIsError,
@@ -79,17 +83,22 @@ export default function Album() {
                     <h2>{albumData?.data.name}</h2>
                     <p>
                         <span>by </span>
-                        {albumData?.data.artists.map((artist: any) => (
-                            <span
-                                key={artist.id}
-                                className="mv-album-artist-detail fw-bold"
-                                onClick={() => {
-                                    navigate(`/Artist/${artist.id}`);
-                                }}
-                            >
-                                {artist.name}
-                            </span>
-                        ))}
+                        {albumData?.data.artists.map(
+                            (artist: any, ind: number) => (
+                                <span>
+                                    {ind === 0 ? "" : ", "}
+                                    <span
+                                        key={artist.id}
+                                        className="mv-album-artist-detail fw-bold"
+                                        onClick={() => {
+                                            navigate(`/Artist/${artist.id}`);
+                                        }}
+                                    >
+                                        {artist.name}
+                                    </span>
+                                </span>
+                            )
+                        )}
                     </p>
                     <p>
                         <span>{albumData?.data.release_date.slice(0, 4)}</span>
@@ -105,22 +114,39 @@ export default function Album() {
                     </p>
                 </div>
             </div>
-            <div id="mv-album-tracks" className="m-2">
-                {albumData?.data.tracks.items.map((track: any) => (
-                    <div
-                        key={track.id}
-                        className="mv-album-track d-flex align-items-center mb-2 ms-2"
-                    >
-                        <span className="me-2">{track.track_number}</span>
-                        <span style={{ width: "100%" }}>{track.name}</span>
-                        <span className="me-4">
-                            {getDurationFormat(track.duration_ms)}
-                        </span>
-                    </div>
-                ))}
+            <div className="m-2">
+                <ul className="nav nav-tabs">
+                    <li className="nav-item">
+                        <Link
+                            to={`/Album/${albumId}`}
+                            className={`nav-link ${
+                                pathname.includes("Comments") ? "" : "active"
+                            }`}
+                            aria-current="page"
+                        >
+                            Details
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link
+                            className={`nav-link ${
+                                pathname.includes("Comments") ? "active" : ""
+                            }`}
+                            to={`/Album/${albumId}/Comments`}
+                        >
+                            Comments
+                        </Link>
+                    </li>
+                </ul>
             </div>
+            <Routes>
+                <Route path="/" element={<AlbumDetails />}/>
+                <Route path="/Comments" element={<AlbumComments />}/>
+            </Routes>
 
-            <p>from query: {token}</p>
+            {/* <p>from query: {token}</p> */}
+            <br />
+            <br />
         </div>
     );
 }

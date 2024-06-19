@@ -50,8 +50,10 @@ export default function Comments({
         queryKey: ["like", comment?._id.$oid],
         queryFn: () => isLike(currentUser?.id.$oid, comment?._id.$oid),
         staleTime: 1000 * 30,
-        enabled: (currentUser?.id || comment?._id) ? false : true,
+        enabled: (!(currentUser?.id) || !(comment?._id)) ? false : true,
     });
+
+    console.log(likeData);
 
     const [content, setContent] = useState({
         content: comment?.content,
@@ -138,6 +140,8 @@ export default function Comments({
         try {
             await likes(session?.session_id, comment?._id.$oid);
             queryClient.invalidateQueries({queryKey: ["like", comment?._id.$oid]})
+            queryClient.invalidateQueries({queryKey: ["comment", artistId? artistId : ""]})
+            refetch()
             likeDataRefetch()
         } catch (e: any) {
 
@@ -152,6 +156,8 @@ export default function Comments({
         try {
             await dislikes(session?.session_id, comment?._id.$oid);
             queryClient.invalidateQueries({queryKey: ["like", comment?._id.$oid]})
+            queryClient.invalidateQueries({queryKey: ["comment", artistId? artistId : ""]})
+            refetch()
             likeDataRefetch()
         } catch (e: any) {
 
@@ -181,8 +187,8 @@ export default function Comments({
                     likeData?.like ? handleDislikeClick() : handleLikeClick()
                 }} className="btn">
                     {likeData?.like ? <FaHeart className="text-danger"/>:<FaRegHeart />}
+                    <div className="d-inline m-2 fs-6">{comment?.likes}</div>
                 </button>
-                <span style={{paddingTop: "10px"}}>{comment?.likes}</span>
                 <button
                     className="btn"
                     onClick={() => {
