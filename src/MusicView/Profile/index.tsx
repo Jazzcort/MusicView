@@ -13,7 +13,7 @@ export default function Profile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { data: session } = useSession();
-    const { data: userData, isFetched: useDataIsFetched } = useUser(session);
+    const { data: userData, isFetched: useDataIsFetched } = useUser(session?.session_id);
 
     const {
         data: profileData,

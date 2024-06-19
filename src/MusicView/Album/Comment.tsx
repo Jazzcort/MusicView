@@ -1,12 +1,17 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getCommentByCommentId, deleteComment, updateComment } from "../api/comments";
+import {
+    getCommentByCommentId,
+    deleteComment,
+    updateComment,
+} from "../api/comments";
 import { createReply, getReplies } from "../api/replies";
 import { searchOtherUser } from "../api/users";
 import useSession from "../../hook/useSession";
 import useUser from "../../hook/useUser";
 import { useState, useEffect } from "react";
 import { likes, dislikes, isLike } from "../api/likes";
+import { FaXmark } from "react-icons/fa6";
 import Reply from "../Artist/Reply";
 import {
     FaStar,
@@ -17,13 +22,25 @@ import {
 } from "react-icons/fa";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
-export default function Comment({ commentId, refetchComments }: { commentId: string, refetchComments: () => void }) {
+import { Link } from "react-router-dom";
+export default function Comment({
+    commentId,
+    refetchComments,
+}: {
+    commentId: string;
+    refetchComments: () => void;
+}) {
     const [showReply, setShowReply] = useState(true);
-    const {albumId} = useParams();
+    const { albumId } = useParams();
     const queryClient = useQueryClient();
     const { data: session } = useSession();
     const { data: userData } = useUser(session?.session_id);
-    const { data: comment, isError: commentIsError, refetch, isFetching: commentIsFetching } = useQuery({
+    const {
+        data: comment,
+        isError: commentIsError,
+        refetch,
+        isFetching: commentIsFetching,
+    } = useQuery({
         queryKey: ["comments", commentId],
         queryFn: () => getCommentByCommentId(commentId),
         staleTime: 1000 * 30,
@@ -39,8 +56,8 @@ export default function Comment({ commentId, refetchComments }: { commentId: str
         isEditing: false,
     });
     useEffect(() => {
-        setContent((old) => ({...old, content: comment?.content}))
-    }, [commentIsFetching])
+        setContent((old) => ({ ...old, content: comment?.content }));
+    }, [commentIsFetching]);
     const {
         data: profileData,
         isError: profileDataIsError,
@@ -52,7 +69,7 @@ export default function Comment({ commentId, refetchComments }: { commentId: str
             return searchOtherUser(comment?.author.$oid);
         },
         staleTime: 1000 * 60 * 60 * 24,
-        enabled: comment ? true : false
+        enabled: comment ? true : false,
     });
 
     const { data: replies, refetch: refetchReplies } = useQuery({
@@ -66,7 +83,7 @@ export default function Comment({ commentId, refetchComments }: { commentId: str
         queryKey: ["likes", comment?._id.$oid],
         queryFn: () => isLike(userData?.id.$oid, comment?._id.$oid),
         staleTime: 1000 * 30,
-        enabled: (!(userData?.id) || !(comment?._id)) ? false : true,
+        enabled: !userData?.id || !comment?._id ? false : true,
     });
 
     if (commentIsError) {
@@ -75,22 +92,23 @@ export default function Comment({ commentId, refetchComments }: { commentId: str
 
     const handleLikeClick = async () => {
         if (!session || !comment || !comment._id) {
-            return alert("In order to like a comment, please log in first.")
+            return alert("In order to like a comment, please log in first.");
         }
 
         try {
             await likes(session?.session_id, comment?._id.$oid, "comment");
-            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
-            queryClient.invalidateQueries({queryKey: ["comments", commentId]})
+            queryClient.invalidateQueries({
+                queryKey: ["likes", comment?._id.$oid],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["comments", commentId],
+            });
             queryClient.invalidateQueries({ queryKey: ["comments", albumId] });
-            refetchComments()
-            refetch()
-            likeDataRefetch()
-        } catch (e: any) {
-
-        }
-
-    }
+            refetchComments();
+            refetch();
+            likeDataRefetch();
+        } catch (e: any) {}
+    };
 
     const handleDeleteClick = async () => {
         if (!session || !comment || !comment._id) {
@@ -105,21 +123,23 @@ export default function Comment({ commentId, refetchComments }: { commentId: str
     };
 
     const handleDislikeClick = async () => {
-        if (!session || !comment ||!comment._id) {
-            return alert("In order to dislike a comment, please log in first.")
-        } 
+        if (!session || !comment || !comment._id) {
+            return alert("In order to dislike a comment, please log in first.");
+        }
         try {
             await dislikes(session?.session_id, comment?._id.$oid, "comment");
-            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
-            queryClient.invalidateQueries({queryKey: ["comments", commentId]})
+            queryClient.invalidateQueries({
+                queryKey: ["likes", comment?._id.$oid],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["comments", commentId],
+            });
             queryClient.invalidateQueries({ queryKey: ["comments", albumId] });
-            refetchComments()
-            refetch()
-            likeDataRefetch()
-        } catch (e: any) {
-
-        }
-    }
+            refetchComments();
+            refetch();
+            likeDataRefetch();
+        } catch (e: any) {}
+    };
 
     const handleConfirmClick = async () => {
         if (!session || !comment || !comment._id) {
@@ -131,7 +151,9 @@ export default function Comment({ commentId, refetchComments }: { commentId: str
                 content: content.content,
             });
             setContent((old) => ({ ...old, isEditing: false }));
-            queryClient.invalidateQueries({ queryKey: ["comments", commentId] });
+            queryClient.invalidateQueries({
+                queryKey: ["comments", commentId],
+            });
             refetch();
         } catch (e: any) {}
     };
@@ -158,9 +180,31 @@ export default function Comment({ commentId, refetchComments }: { commentId: str
     return (
         <div className="m-2">
             <h4>
-                {profileData?.username}
-                {profileData?.role === "artist" && <FaStar className="ms-2 mb-1 text-warning"/>}
-                </h4>
+                {profileData?.role === "artist" && (
+                    <Link to={`/Artist/${profileData?.artist_id}`}>
+                        {profileData?.username}
+                    </Link>
+                )}
+                {profileData?.role === "fan" && (
+                    <Link to={`/Profile/${profileData?.id.$oid}`}>
+                        {profileData?.username}
+                    </Link>
+                )}
+
+                {profileData?.role === "admin" && profileData?.username}
+
+                {profileData?.role === "artist" && (
+                    <FaStar className="ms-2 mb-1 text-warning" />
+                )}
+                {userData?.role === "admin" && (
+                    <button
+                        onClick={handleDeleteClick}
+                        className="btn btn-danger btn-sm ms-4 mb-1 rounded-4"
+                    >
+                        <FaXmark style={{ marginBottom: "2px" }} />
+                    </button>
+                )}
+            </h4>
             <div className="border-start border-black ps-4 ms-2">
                 {content.isEditing && (
                     <textarea

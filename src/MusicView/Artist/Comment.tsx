@@ -5,12 +5,14 @@ import useSession from "../../hook/useSession";
 import { getReplies, createReply } from "../api/replies";
 import { isLike, likes, dislikes } from "../api/likes";
 import { FaStar } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 import {
     FaRegHeart,
     FaHeart,
     FaRegCommentAlt,
     FaEllipsisH,
 } from "react-icons/fa";
+import { FaXmark } from "react-icons/fa6";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
 import { useState } from "react";
@@ -51,7 +53,7 @@ export default function Comments({
         queryKey: ["likes", comment?._id.$oid],
         queryFn: () => isLike(currentUser?.id.$oid, comment?._id.$oid),
         staleTime: 1000 * 30,
-        enabled: (!(currentUser?.id) || !(comment?._id)) ? false : true,
+        enabled: !currentUser?.id || !comment?._id ? false : true,
     });
 
     // console.log(likeData);
@@ -86,8 +88,6 @@ export default function Comments({
     if (profileDataIsError) {
         return null;
     }
-
-    
 
     const handleDeleteClick = async () => {
         if (!session || !comment || !comment._id) {
@@ -137,41 +137,62 @@ export default function Comments({
 
     const handleLikeClick = async () => {
         if (!session || !comment || !comment._id) {
-            return alert("In order to like a comment, please log in first.")
+            return alert("In order to like a comment, please log in first.");
         }
 
         try {
             await likes(session?.session_id, comment?._id.$oid, "comment");
-            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
-            queryClient.invalidateQueries({queryKey: ["comments", artistId? artistId : ""]})
-            refetch()
-            likeDataRefetch()
-        } catch (e: any) {
-
-        }
-
-    }
+            queryClient.invalidateQueries({
+                queryKey: ["likes", comment?._id.$oid],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["comments", artistId ? artistId : ""],
+            });
+            refetch();
+            likeDataRefetch();
+        } catch (e: any) {}
+    };
 
     const handleDislikeClick = async () => {
-        if (!session || !comment ||!comment._id) {
-            return alert("In order to dislike a comment, please log in first.")
-        } 
+        if (!session || !comment || !comment._id) {
+            return alert("In order to dislike a comment, please log in first.");
+        }
         try {
             await dislikes(session?.session_id, comment?._id.$oid, "comment");
-            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
-            queryClient.invalidateQueries({queryKey: ["comments", artistId? artistId : ""]})
-            refetch()
-            likeDataRefetch()
-        } catch (e: any) {
+            queryClient.invalidateQueries({
+                queryKey: ["likes", comment?._id.$oid],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["comments", artistId ? artistId : ""],
+            });
+            refetch();
+            likeDataRefetch();
+        } catch (e: any) {}
+    };
 
-        }
-    }
+    console.log(currentUser);
 
     return (
         <div className="m-2">
             <h4>
-                {profileData?.username}
-                {profileData?.role === "artist" && <FaStar className="ms-2 mb-1 text-warning"/>}
+                {profileData?.role === "artist" && (
+                    <Link to={`/Artist/${profileData?.artist_id}`}>{profileData?.username}</Link>
+                )}
+                {profileData?.role === "fan" && <Link to={`/Profile/${profileData?.id.$oid}`}>{profileData?.username}</Link>}
+
+                {profileData?.role === "admin" && profileData?.username}
+                
+                {profileData?.role === "artist" && (
+                    <FaStar className="ms-2 mb-1 text-warning" />
+                )}
+                {currentUser?.role === "admin" && (
+                    <button
+                        onClick={handleDeleteClick}
+                        className="btn btn-danger btn-sm ms-4 mb-1 rounded-4"
+                    >
+                        <FaXmark style={{ marginBottom: "2px" }} />
+                    </button>
+                )}
             </h4>
             <div className="border-start border-black ps-4 ms-2">
                 {content.isEditing && (
@@ -189,10 +210,19 @@ export default function Comments({
                     <span className="m-2">{content.content}</span>
                 )}
                 <br />
-                <button onClick={() => {
-                    likeData?.like ? handleDislikeClick() : handleLikeClick()
-                }} className="btn">
-                    {likeData?.like ? <FaHeart className="text-danger"/>:<FaRegHeart />}
+                <button
+                    onClick={() => {
+                        likeData?.like
+                            ? handleDislikeClick()
+                            : handleLikeClick();
+                    }}
+                    className="btn"
+                >
+                    {likeData?.like ? (
+                        <FaHeart className="text-danger" />
+                    ) : (
+                        <FaRegHeart />
+                    )}
                     <div className="d-inline m-2 fs-6">{comment?.likes}</div>
                 </button>
                 <button
