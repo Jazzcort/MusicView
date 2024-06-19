@@ -8,7 +8,7 @@ import Comments from "./Comment";
 
 export default function ArtistComments() {
     const { data: session } = useSession();
-    const { data: userData, isFetched: userDataIsFatched } = useUser(session.session_id);
+    const { data: userData, isFetched: userDataIsFatched } = useUser(session?.session_id);
     const [comment, setComment] = useState("");
     const [errMessage, setErrMessage] = useState("");
     const { artistId } = useParams();
@@ -24,7 +24,7 @@ export default function ArtistComments() {
     });
 
     const handleSubmitClick = async () => {
-        if (!comment || !artistId || !userData) {
+        if (!comment || !artistId || !userData || !session) {
             return;
         }
 
@@ -36,6 +36,7 @@ export default function ArtistComments() {
         };
         try {
             await createComment(session.session_id, commentInfo);
+            setComment("");
             queryClient.invalidateQueries({ queryKey: ["comments", artistId] });
             refetch();
         } catch (e: any) {}
@@ -69,7 +70,7 @@ export default function ArtistComments() {
                 </div>
             )}
             {commentsData?.map((item: any) => (
-                <div className="m-2">
+                <div key={item._id.$oid} className="m-2">
                     <Comments currentUser={userData} comment={item} refetch={refetch} artistId={artistId? artistId : ""} />
                 </div>
             ))}
