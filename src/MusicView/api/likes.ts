@@ -8,14 +8,14 @@ export async function isLike(user_id: string, target_id: string) {
     return res.data;
 }
 
-export async function likes(session_id: string, target_id: string) {
+export async function likes(session_id: string, target_id: string, target: string) {
     const parameters = {
         method: "post",
         headers: {
             "Content-Type": "application/json",
             Authorization: session_id,
         },
-        url: `${REMOTE_SERVER}/likes?target_id=${target_id}`,
+        url: `${REMOTE_SERVER}/likes?target_id=${target_id}&target=${target}`,
         timeout: 20000,
     };
 
@@ -23,14 +23,14 @@ export async function likes(session_id: string, target_id: string) {
     return res.data;
 }
 
-export async function dislikes(session_id: string, target_id: string) {
+export async function dislikes(session_id: string, target_id: string, target: string) {
     const parameters = {
         method: "delete",
         headers: {
             "Content-Type": "application/json",
             Authorization: session_id,
         },
-        url: `${REMOTE_SERVER}/likes?target_id=${target_id}`,
+        url: `${REMOTE_SERVER}/likes?target_id=${target_id}&target=${target}`,
         timeout: 20000,
     };
 

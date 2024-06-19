@@ -15,13 +15,15 @@ export default function ArtistComments() {
     const queryClient = useQueryClient();
 
     const { data: commentsData, refetch } = useQuery({
-        queryKey: ["comment", artistId],
+        queryKey: ["comments", artistId],
         queryFn: () => {
             return getCommentsByTargetId(artistId);
         },
         staleTime: 1000 * 30,
         enabled: artistId ? true : false,
     });
+
+    // console.log(commentsData);
 
     const handleSubmitClick = async () => {
         if (!comment || !artistId || !userData || !session) {

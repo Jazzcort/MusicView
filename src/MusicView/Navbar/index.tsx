@@ -11,11 +11,11 @@ export default function Navbar() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    console.log(data?.expiration_date * 1000 - new Date().getTime());
+    // console.log(data?.expiration_date * 1000 - new Date().getTime());
     // console.log(queryClient);
 
     const { data: userData } = useUser(data?.session_id);
-    console.log(userData);
+    // console.log(userData);
 
     return (
         <div id="mv-navbar">

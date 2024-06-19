@@ -1,11 +1,15 @@
-import { searchOtherUser } from "../api/users";
-import { deleteComment, updateComment } from "../api/comments";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { getCommentByCommentId, deleteComment, updateComment } from "../api/comments";
+import { createReply, getReplies } from "../api/replies";
+import { searchOtherUser } from "../api/users";
 import useSession from "../../hook/useSession";
-import { getReplies, createReply } from "../api/replies";
-import { isLike, likes, dislikes } from "../api/likes";
-import { FaStar } from "react-icons/fa6";
+import useUser from "../../hook/useUser";
+import { useState, useEffect } from "react";
+import { likes, dislikes, isLike } from "../api/likes";
+import Reply from "../Artist/Reply";
 import {
+    FaStar,
     FaRegHeart,
     FaHeart,
     FaRegCommentAlt,
@@ -13,31 +17,42 @@ import {
 } from "react-icons/fa";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
-import { useState } from "react";
-import Reply from "./Reply";
-export default function Comments({
-    currentUser,
-    comment,
-    refetch,
-    artistId,
-}: {
-    currentUser: any;
-    comment: any;
-    refetch: () => void;
-    artistId: string;
-}) {
+export default function Comment({ commentId, refetchComments }: { commentId: string, refetchComments: () => void }) {
     const [showReply, setShowReply] = useState(true);
+    const {albumId} = useParams();
+    const queryClient = useQueryClient();
+    const { data: session } = useSession();
+    const { data: userData } = useUser(session?.session_id);
+    const { data: comment, isError: commentIsError, refetch, isFetching: commentIsFetching } = useQuery({
+        queryKey: ["comments", commentId],
+        queryFn: () => getCommentByCommentId(commentId),
+        staleTime: 1000 * 30,
+        enabled: commentId ? true : false,
+    });
+    const [content, setContent] = useState({
+        content: comment?.content,
+        isEditing: false,
+    });
 
+    const [reply, setReply] = useState({
+        content: "",
+        isEditing: false,
+    });
+    useEffect(() => {
+        setContent((old) => ({...old, content: comment?.content}))
+    }, [commentIsFetching])
     const {
         data: profileData,
         isError: profileDataIsError,
         isLoading: profileDataIsLoading,
         error: profileDataError,
     } = useQuery({
-        queryKey: ["profile", comment.author.$oid],
+        queryKey: ["profile", comment?.author.$oid],
         queryFn: () => {
-            return searchOtherUser(comment.author.$oid);
+            return searchOtherUser(comment?.author.$oid);
         },
+        staleTime: 1000 * 60 * 60 * 24,
+        enabled: comment ? true : false
     });
 
     const { data: replies, refetch: refetchReplies } = useQuery({
@@ -49,45 +64,33 @@ export default function Comments({
 
     const { data: likeData, refetch: likeDataRefetch } = useQuery({
         queryKey: ["likes", comment?._id.$oid],
-        queryFn: () => isLike(currentUser?.id.$oid, comment?._id.$oid),
+        queryFn: () => isLike(userData?.id.$oid, comment?._id.$oid),
         staleTime: 1000 * 30,
-        enabled: (!(currentUser?.id) || !(comment?._id)) ? false : true,
+        enabled: (!(userData?.id) || !(comment?._id)) ? false : true,
     });
 
-    // console.log(likeData);
-
-    const [content, setContent] = useState({
-        content: comment?.content,
-        isEditing: false,
-    });
-
-    const [reply, setReply] = useState({
-        content: "",
-        isEditing: false,
-    });
-
-    const { data: session } = useSession();
-
-    const queryClient = useQueryClient();
-
-    if (profileDataIsLoading) {
-        return (
-            <div
-                style={{ height: "100%" }}
-                className="d-flex align-items-center justify-content-center"
-            >
-                <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        );
-    }
-
-    if (profileDataIsError) {
+    if (commentIsError) {
         return null;
     }
 
-    
+    const handleLikeClick = async () => {
+        if (!session || !comment || !comment._id) {
+            return alert("In order to like a comment, please log in first.")
+        }
+
+        try {
+            await likes(session?.session_id, comment?._id.$oid, "comment");
+            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
+            queryClient.invalidateQueries({queryKey: ["comments", commentId]})
+            queryClient.invalidateQueries({ queryKey: ["comments", albumId] });
+            refetchComments()
+            refetch()
+            likeDataRefetch()
+        } catch (e: any) {
+
+        }
+
+    }
 
     const handleDeleteClick = async () => {
         if (!session || !comment || !comment._id) {
@@ -96,10 +99,27 @@ export default function Comments({
 
         try {
             await deleteComment(comment?._id.$oid, session?.session_id);
-            queryClient.invalidateQueries({ queryKey: ["comments", artistId] });
-            refetch();
+            queryClient.invalidateQueries({ queryKey: ["comments", albumId] });
+            refetchComments();
         } catch (e: any) {}
     };
+
+    const handleDislikeClick = async () => {
+        if (!session || !comment ||!comment._id) {
+            return alert("In order to dislike a comment, please log in first.")
+        } 
+        try {
+            await dislikes(session?.session_id, comment?._id.$oid, "comment");
+            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
+            queryClient.invalidateQueries({queryKey: ["comments", commentId]})
+            queryClient.invalidateQueries({ queryKey: ["comments", albumId] });
+            refetchComments()
+            refetch()
+            likeDataRefetch()
+        } catch (e: any) {
+
+        }
+    }
 
     const handleConfirmClick = async () => {
         if (!session || !comment || !comment._id) {
@@ -111,13 +131,13 @@ export default function Comments({
                 content: content.content,
             });
             setContent((old) => ({ ...old, isEditing: false }));
-            queryClient.invalidateQueries({ queryKey: ["comments", artistId] });
+            queryClient.invalidateQueries({ queryKey: ["comments", commentId] });
             refetch();
         } catch (e: any) {}
     };
 
     const handleReplySubmit = async () => {
-        if (!session || !currentUser || !comment || !comment._id) {
+        if (!session || !userData || !comment || !comment._id) {
             return;
         }
         try {
@@ -125,7 +145,7 @@ export default function Comments({
                 content: reply.content,
                 likes: 0,
                 comment_id: comment?._id,
-                author: currentUser?.id,
+                author: userData?.id,
             });
             setReply({ content: "", isEditing: false });
             queryClient.invalidateQueries({
@@ -135,44 +155,12 @@ export default function Comments({
         } catch (e: any) {}
     };
 
-    const handleLikeClick = async () => {
-        if (!session || !comment || !comment._id) {
-            return alert("In order to like a comment, please log in first.")
-        }
-
-        try {
-            await likes(session?.session_id, comment?._id.$oid, "comment");
-            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
-            queryClient.invalidateQueries({queryKey: ["comments", artistId? artistId : ""]})
-            refetch()
-            likeDataRefetch()
-        } catch (e: any) {
-
-        }
-
-    }
-
-    const handleDislikeClick = async () => {
-        if (!session || !comment ||!comment._id) {
-            return alert("In order to dislike a comment, please log in first.")
-        } 
-        try {
-            await dislikes(session?.session_id, comment?._id.$oid, "comment");
-            queryClient.invalidateQueries({queryKey: ["likes", comment?._id.$oid]})
-            queryClient.invalidateQueries({queryKey: ["comments", artistId? artistId : ""]})
-            refetch()
-            likeDataRefetch()
-        } catch (e: any) {
-
-        }
-    }
-
     return (
         <div className="m-2">
             <h4>
                 {profileData?.username}
                 {profileData?.role === "artist" && <FaStar className="ms-2 mb-1 text-warning"/>}
-            </h4>
+                </h4>
             <div className="border-start border-black ps-4 ms-2">
                 {content.isEditing && (
                     <textarea
@@ -189,10 +177,19 @@ export default function Comments({
                     <span className="m-2">{content.content}</span>
                 )}
                 <br />
-                <button onClick={() => {
-                    likeData?.like ? handleDislikeClick() : handleLikeClick()
-                }} className="btn">
-                    {likeData?.like ? <FaHeart className="text-danger"/>:<FaRegHeart />}
+                <button
+                    onClick={() => {
+                        likeData?.like
+                            ? handleDislikeClick()
+                            : handleLikeClick();
+                    }}
+                    className="btn"
+                >
+                    {likeData?.like ? (
+                        <FaHeart className="text-danger" />
+                    ) : (
+                        <FaRegHeart />
+                    )}
                     <div className="d-inline m-2 fs-6">{comment?.likes}</div>
                 </button>
                 <button
@@ -214,7 +211,7 @@ export default function Comments({
                     Reply
                 </button>
                 {!content.isEditing &&
-                    currentUser?.id.$oid === comment?.author.$oid && (
+                    userData?.id.$oid === comment?.author.$oid && (
                         <div className="dropdown d-inline">
                             <button className="btn" data-bs-toggle="dropdown">
                                 <FaEllipsisH />

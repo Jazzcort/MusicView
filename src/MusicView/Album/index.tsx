@@ -41,6 +41,8 @@ export default function Album() {
         queryFn: () => {
             return getAlbumWithId(albumId, token);
         },
+        staleTime: 1000 * 60 * 60 * 24,
+        enabled: token? true: false
     });
 
     if (albumIsLoading) {
@@ -61,7 +63,7 @@ export default function Album() {
         navigate("/Error");
     }
 
-    console.log(albumData);
+    // console.log(albumData);
 
     return (
         <div id="mv-album-page">
@@ -85,7 +87,7 @@ export default function Album() {
                         <span>by </span>
                         {albumData?.data.artists.map(
                             (artist: any, ind: number) => (
-                                <span>
+                                <span key={artist.id}>
                                     {ind === 0 ? "" : ", "}
                                     <span
                                         key={artist.id}

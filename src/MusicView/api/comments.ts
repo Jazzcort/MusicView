@@ -9,6 +9,12 @@ export async function getCommentsByTargetId(targetId: string | undefined) {
     );
     return res.data;
 }
+
+export async function getCommentByCommentId(comment_id: string) {
+    const res = await axios.get(`${REMOTE_SERVER}/comments/${comment_id}`)
+    return res.data
+}
+
 export async function createComment(session_id: string, comment: any) {
     const parameters = {
         method: "post",

@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { isLike, likes, dislikes } from "../api/likes";
 import { searchOtherUser } from "../api/users";
 import { FaRegHeart, FaHeart, FaEllipsisH } from "react-icons/fa";
 import { deleteReply, updateReply } from "../api/replies";
@@ -14,6 +15,9 @@ export default function Reply({
     comment_id: string;
     refetch: () => void;
 }) {
+    const { data: session } = useSession();
+    const queryClient = useQueryClient();
+    const { data: userData } = useUser(session?.session_id);
     const {
         data: profileData,
         isError: profileDataIsError,
@@ -26,14 +30,17 @@ export default function Reply({
         },
     });
 
+    const { data: likeData, refetch: likeDataRefetch } = useQuery({
+        queryKey: ["likes", reply?._id.$oid],
+        queryFn: () => isLike(userData?.id.$oid, reply?._id.$oid),
+        staleTime: 1000 * 30,
+        enabled: (!(userData?.id) || !(reply?._id)) ? false : true,
+    });
+
     const [content, setContent] = useState({
         content: reply?.content,
         isEditing: false,
     });
-
-    const { data: session } = useSession();
-    const queryClient = useQueryClient();
-    const { data: userData } = useUser(session?.session_id);
 
     const handleDeleteClick = async () => {
         if (!session || !comment_id || !reply || !reply?._id) {
@@ -67,6 +74,38 @@ export default function Reply({
         return null;
     }
 
+    const handleLikeClick = async () => {
+        if (!session || !reply || !reply._id) {
+            return alert("In order to like a comment, please log in first.")
+        }
+
+        try {
+            await likes(session?.session_id, reply?._id.$oid, "reply");
+            queryClient.invalidateQueries({queryKey: ["likes", reply?._id.$oid]})
+            queryClient.invalidateQueries({queryKey: ["replies", comment_id]})
+            refetch()
+            likeDataRefetch()
+        } catch (e: any) {
+
+        }
+
+    }
+
+    const handleDislikeClick = async () => {
+        if (!session || !reply || !reply._id) {
+            return alert("In order to dislike a comment, please log in first.")
+        } 
+        try {
+            await dislikes(session?.session_id, reply?._id.$oid, "comment");
+            queryClient.invalidateQueries({queryKey: ["likes", reply?._id.$oid]})
+            queryClient.invalidateQueries({queryKey: ["comments", comment_id]})
+            refetch()
+            likeDataRefetch()
+        } catch (e: any) {
+
+        }
+    }
+
     return (
         <div className="m-3">
             <h5>{profileData?.username}</h5>
@@ -86,8 +125,11 @@ export default function Reply({
                     <span className="m-2">{reply?.content}</span>
                 )}
                 <br />
-                <button className="btn">
-                    <FaRegHeart />
+                <button onClick={() => {
+                    likeData?.like ? handleDislikeClick() : handleLikeClick()
+                }} className="btn">
+                    {likeData?.like ? <FaHeart className="text-danger"/>:<FaRegHeart />}
+                    <div className="d-inline m-2 fs-6">{reply?.likes}</div>
                 </button>
                 {!content.isEditing &&
                     userData?.username === profileData?.username && (
