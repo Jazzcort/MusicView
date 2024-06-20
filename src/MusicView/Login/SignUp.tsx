@@ -6,6 +6,7 @@ import { FaRegCircleXmark } from "react-icons/fa6";
 import sha256 from "crypto-js/sha256";
 import { signup } from "../api/users";
 import useSession from "../../hook/useSession";
+import { useQueryClient } from "@tanstack/react-query";
 
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const usernameRegex = /^[a-zA-Z0-9._-]{8,}/;
@@ -16,6 +17,7 @@ const oneLowerCase = /^(?=.*?[a-z]).{1,}$/;
 const oneSpecialChar = /^(?=.*?[#?!@$%^&*-]).{1,}$/;
 
 export default function SignUp() {
+    const queryClient = useQueryClient();
     const [signUpInfo, setSignUpInfo] = useState({
         email: "",
         password: "",
@@ -66,14 +68,16 @@ export default function SignUp() {
         }
 
         const hash = sha256(signUpInfo.password).toString();
-        const salt = crypto.randomUUID().toString();
-        console.log(hash, salt);
+        // const salt = crypto.randomUUID().toString();
         try {
             const res = await signup(signUpInfo);
-            
-            console.log(res);
+            localStorage.setItem("mv_user_email", signUpInfo.email);
+            localStorage.setItem("mv_user_secret", hash);
+            queryClient.invalidateQueries({ queryKey: ["user"] });
+            queryClient.invalidateQueries({ queryKey: ["session"] });
+            navigate("/Home");
         } catch (e: any) {
-            setSignUpError("Email or Username has already been registered")
+            setSignUpError("Email or Username has already been registered");
         }
     };
     return (
@@ -131,7 +135,13 @@ export default function SignUp() {
                 }
             />
             <div className="d-flex flex-column m-2">
-                <span className={`mb-1 offset-1 ${passwordRequirement.minLength ? "text-success" : "text-danger"}`}>
+                <span
+                    className={`mb-1 offset-1 ${
+                        passwordRequirement.minLength
+                            ? "text-success"
+                            : "text-danger"
+                    }`}
+                >
                     {passwordRequirement.minLength ? (
                         <FaRegCircleCheck className="me-2" />
                     ) : (
@@ -139,7 +149,13 @@ export default function SignUp() {
                     )}
                     8 character length
                 </span>
-                <span className={`mb-1 offset-1 ${passwordRequirement.oneUpper ? "text-success" : "text-danger"}`}>
+                <span
+                    className={`mb-1 offset-1 ${
+                        passwordRequirement.oneUpper
+                            ? "text-success"
+                            : "text-danger"
+                    }`}
+                >
                     {passwordRequirement.oneUpper ? (
                         <FaRegCircleCheck className="me-2 text-success" />
                     ) : (
@@ -147,7 +163,13 @@ export default function SignUp() {
                     )}
                     At least 1 upper-case character
                 </span>
-                <span className={`mb-1 offset-1 ${passwordRequirement.oneLower? "text-success" : "text-danger"}`}> 
+                <span
+                    className={`mb-1 offset-1 ${
+                        passwordRequirement.oneLower
+                            ? "text-success"
+                            : "text-danger"
+                    }`}
+                >
                     {passwordRequirement.oneLower ? (
                         <FaRegCircleCheck className="me-2 text-success" />
                     ) : (
@@ -155,7 +177,13 @@ export default function SignUp() {
                     )}
                     At least 1 lower-case character
                 </span>
-                <span className={`mb-1 offset-1 ${passwordRequirement.oneSpecial? "text-success" : "text-danger"}`}>
+                <span
+                    className={`mb-1 offset-1 ${
+                        passwordRequirement.oneSpecial
+                            ? "text-success"
+                            : "text-danger"
+                    }`}
+                >
                     {passwordRequirement.oneSpecial ? (
                         <FaRegCircleCheck className="me-2 text-success" />
                     ) : (
@@ -163,7 +191,13 @@ export default function SignUp() {
                     )}
                     At least 1 special character (#?!@$%^&*-)
                 </span>
-                <span className={`mb-1 offset-1 ${passwordRequirement.noSpace? "text-success" : "text-danger"}`}>
+                <span
+                    className={`mb-1 offset-1 ${
+                        passwordRequirement.noSpace
+                            ? "text-success"
+                            : "text-danger"
+                    }`}
+                >
                     {passwordRequirement.noSpace ? (
                         <FaRegCircleCheck className="me-2 text-success" />
                     ) : (

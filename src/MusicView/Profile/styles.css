@@ -1,0 +1,14 @@
+#mv-profile .mv-search-button {
+    background-color: var(--mv-button-color);
+    color: floralwhite;
+    font-weight: 600;
+}
+
+#mv-profile .mv-search-button:hover {
+    background-color: antiquewhite;
+    color: black;
+}
+
+#mv-profile .mv-search-card {
+    background-color: floralwhite;
+}

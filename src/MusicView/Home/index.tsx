@@ -15,7 +15,6 @@ export default function Home() {
     return (
         <div id="mv-home">
             <h1>Welcome to MusicView</h1>
-            <p>{JSON.stringify(session)}</p>
             {!session && (
                 <Link className="mv-home-button btn m-2" to="/Login">
                     Login

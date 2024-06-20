@@ -1,10 +1,12 @@
 import { LuDot } from "react-icons/lu";
 import useQueryToken from "../../hook/useQueryToken";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { getArtistTopTracks, getArtistAlbum } from "../api/search";
 import { setError } from "../Error/errorReducer";
+import { useEffect, useRef, useState } from "react";
+import { setAudio } from "../audio/reducer";
 
 const defaultImage = "/images/logic-board.jpg";
 
@@ -13,6 +15,38 @@ export default function ArtistDetails() {
     const queryToken = useQueryToken();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const { src } = useSelector((state: any) => state.audioReducer);
+    const [play, setPlay] = useState(false);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [firstRender, setFirstRender] = useState(true);
+
+    const handleTrackClick = (audioSrc: string | undefined) => {
+        if (!audioSrc) {
+            return;
+        }
+
+        if (audioSrc !== src) {
+            dispatch(setAudio(audioSrc));
+        } else {
+            if (play) {
+                setPlay(!play);
+                audioRef.current?.pause();
+            } else {
+                setPlay(!play);
+                audioRef.current?.play();
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (!firstRender) {
+            setPlay(true);
+            audioRef.current?.play();
+        } else {
+            setFirstRender(false)
+        }
+    }, [src]);
 
     const {
         data: topTracksData,
@@ -26,6 +60,7 @@ export default function ArtistDetails() {
         enabled: queryToken?.data ? true : false,
         staleTime: 3300000,
     });
+
 
     if (topTracksIsError) {
         dispatch(setError(topTracksError.message));
@@ -52,6 +87,7 @@ export default function ArtistDetails() {
 
     return (
         <div>
+            <audio ref={audioRef} src={src}></audio>
             <h3 className="m-2 mt-4">Popular</h3>
             <div id="mv-artist-top-tracks" className="m-2">
                 {topTracksData &&
@@ -60,6 +96,9 @@ export default function ArtistDetails() {
                             <div
                                 key={track.id}
                                 className="mv-artist-top-tracks-detail d-flex align-items-center mb-2 ms-2 rounded-2"
+                                onClick={() =>
+                                    handleTrackClick(track.preview_url)
+                                }
                             >
                                 <img
                                     src={

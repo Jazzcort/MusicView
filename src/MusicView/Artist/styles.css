@@ -1,3 +1,14 @@
 .mv-artist-top-tracks-detail:hover {
     background-color: beige;
 }
+
+#mv-artist-page .comment-button {
+    background-color: var(--mv-button-color);
+    color: floralwhite;
+    font-weight: 600;
+}
+
+#mv-artist-page .comment-button:hover {
+    background-color: antiquewhite;
+    color:black;
+}

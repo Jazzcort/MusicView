@@ -117,7 +117,7 @@ export default function Comments({
     };
 
     const handleReplySubmit = async () => {
-        if (!session || !currentUser || !comment || !comment._id) {
+        if (!session || !currentUser || !comment || !comment._id || !reply.content) {
             return;
         }
         try {
@@ -170,7 +170,7 @@ export default function Comments({
         } catch (e: any) {}
     };
 
-    console.log(currentUser);
+    // console.log(currentUser);
 
     return (
         <div className="m-2">
@@ -283,7 +283,7 @@ export default function Comments({
                 {content.isEditing && (
                     <button
                         onClick={handleConfirmClick}
-                        className="btn btn-warning"
+                        className="btn btn-sm comment-button"
                     >
                         Confirm
                     </button>
@@ -300,14 +300,15 @@ export default function Comments({
                                 }));
                             }}
                         ></textarea>
-                        <button onClick={handleReplySubmit} className="btn">
+                        <br />
+                        <button onClick={handleReplySubmit} className="btn btn-sm comment-button me-2">
                             Submit
                         </button>
                         <button
                             onClick={() =>
                                 setReply({ content: "", isEditing: false })
                             }
-                            className="btn"
+                            className="btn btn-sm btn-warning"
                         >
                             Cancel
                         </button>

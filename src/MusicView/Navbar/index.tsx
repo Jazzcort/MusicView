@@ -11,11 +11,7 @@ export default function Navbar() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    // console.log(data?.expiration_date * 1000 - new Date().getTime());
-    // console.log(queryClient);
-
     const { data: userData } = useUser(data?.session_id);
-    // console.log(userData);
 
     return (
         <div id="mv-navbar">
@@ -44,7 +40,16 @@ export default function Navbar() {
                         </button>
                         <ul className="dropdown-menu">
                             <li>
-                                <a className="dropdown-item" onClick={() => {navigate(`/Profile/${userData.id.$oid}`)}}>
+                                <a className="dropdown-item" onClick={() => {
+                                    if (!userData) {
+                                        return 
+                                    } else if (userData.role === "fan") {
+                                        navigate(`/Profile/${userData?.id.$oid}`) 
+                                    } else if (userData.role === "artist") {
+                                        navigate(`/Artist/${userData.artist_id}`)}
+                                    }
+                                    
+                                    }>
                                     Profile
                                 </a>
                             </li>

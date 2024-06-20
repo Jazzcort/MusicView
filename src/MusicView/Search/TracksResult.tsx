@@ -1,4 +1,5 @@
 import { LuDot } from "react-icons/lu";
+import { Link } from "react-router-dom";
 export default function TracksResult({ tracks }: { tracks: any[] }) {
     return (
         <>
@@ -24,15 +25,13 @@ function Track({ track }: { track: any }) {
                 className="card-img-top"
                 style={{ height: "220px" }}
             />
-            <div className="card-body">
+            <div className="card-body mv-search-card">
                 <h5 className="card-title">{track.name}</h5>
                 <p className="card-text">
                     {track.album?.name ? track.album.name : "unknown"} <LuDot />{" "}
                     {track.artists[0] ? track.artists[0].name : "unknown"}{" "}
                 </p>
-                <a href="#" className="btn btn-primary">
-                    Go somewhere
-                </a>
+                <Link className="mv-search-button btn" to={`/Album/${track.album.id}`}>To Album</Link>
             </div>
         </div>
     );

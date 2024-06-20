@@ -6,6 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { searchOtherUser } from "../api/users";
 import { setError } from "../Error/errorReducer";
 import { UseDispatch, useDispatch } from "react-redux";
+import { getLikedArtistByUserId } from "../api/like_artists";
+import Artist from "./Artist";
+import "./styles.css"
 const defaultImage = "/images/logic-board.jpg";
 export default function Profile() {
     const { userId } = useParams();
@@ -13,7 +16,9 @@ export default function Profile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { data: session } = useSession();
-    const { data: userData, isFetched: useDataIsFetched } = useUser(session?.session_id);
+    const { data: userData, isFetched: useDataIsFetched } = useUser(
+        session?.session_id
+    );
 
     const {
         data: profileData,
@@ -21,11 +26,18 @@ export default function Profile() {
         isLoading: profileDataIsLoading,
         error: profileDataError,
     } = useQuery({
-        queryKey: ["profile", userId? userId: ""],
+        queryKey: ["profile", userId ? userId : ""],
         queryFn: () => {
             return searchOtherUser(userId);
         },
-        enabled: userId? true: false
+        enabled: userId ? true : false,
+    });
+
+    const { data: likedArtist } = useQuery({
+        queryKey: ["likedArtist", profileData?.id.$oid],
+        queryFn: () => getLikedArtistByUserId(profileData?.id.$oid),
+        staleTime: 1000 * 60 * 60,
+        enabled: profileData ? true : false,
     });
 
     if (profileDataIsLoading) {
@@ -48,7 +60,7 @@ export default function Profile() {
 
     return (
         <div id="mv-profile">
-            <h1>Profile</h1>
+            <h1 className="m-2">Profile</h1>
 
             <div>
                 <div id="mv-profile-image" className="d-flex m-2">
@@ -57,20 +69,28 @@ export default function Profile() {
                         style={{ height: "320px" }}
                         src={defaultImage}
                     />
-                    {/* <p>{JSON.stringify(userData?.id)}</p> */}
-                    {/* <p>{JSON.stringify(profileData?.id)}</p> */}
-                    {(useDataIsFetched && !userData) || userData?.id.$oid !== profileData?.id.$oid ? (
+
+                    {(useDataIsFetched && !userData) ||
+                    userData?.id.$oid !== profileData?.id.$oid ? (
                         <div>
                             <h2>{profileData?.username}</h2>
+                            <p className="ms-4">Role: {profileData?.role}</p>
                         </div>
                     ) : (
                         <div>
                             <h2>{userData?.username}</h2>
-                            <p>{userData?.email}</p>
-                            <p>{userData?.role}</p>
+                            <p className="ms-4">Email: {userData?.email}</p>
+                            <p className="ms-4">Role: {userData?.role}</p>
                         </div>
                     )}
                 </div>
+            </div>
+            {likedArtist && likedArtist.length !== 0 && <h2 className="m-2">Recently Liked</h2>}
+            <div className="d-flex">
+                {likedArtist &&
+                    likedArtist.map((item: any) => (
+                        <Artist key={item} artistId={item} />
+                    ))}
             </div>
         </div>
     );

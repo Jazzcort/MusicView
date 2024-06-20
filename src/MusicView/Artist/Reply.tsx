@@ -203,10 +203,11 @@ export default function Reply({
                         </div>
                     )}
                 {content.isEditing && (
-                    <button onClick={handleEditConfirm}>Confirm</button>
+                    <button className="btn btn-sm comment-button me-2" onClick={handleEditConfirm}>Confirm</button>
                 )}
                 {content.isEditing && (
                     <button
+                        className="btn btn-warning btn-sm fw-semibold"
                         onClick={() => {
                             setContent({
                                 content: reply?.content,

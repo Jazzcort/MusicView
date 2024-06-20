@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { LuDot } from "react-icons/lu";
 import { Link, Route, Routes } from "react-router-dom";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import {
     getArtistById,
     getArtistTopTracks,
@@ -14,22 +15,26 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import useQueryToken from "../../hook/useQueryToken";
 import useToken from "../../hook/useToken";
 import { useDispatch } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "./styles.css";
 import ArtistResult from "../Search/ArtistResult";
 import ArtistDetails from "./ArtistDetails";
 import ArtistComments from "./ArtistComments";
+import useSession from "../../hook/useSession";
+import useUser from "../../hook/useUser";
+import { isLikeArtist, likeArtist, dislikeArtist } from "../api/like_artists";
 
 const defaultImage = "/images/logic-board.jpg";
 
 export default function Artist() {
     const queryToken = useQueryToken();
-    // const [artist, setArtist] = useState<any>(null);
     const { artistId } = useParams();
     const { pathname } = useLocation();
-    // const [token, updateToken] = useToken();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { data: session } = useSession();
+    const { data: userData } = useUser(session?.session_id);
+    const queryClient = useQueryClient();
 
     if (queryToken.isError) {
         dispatch(setError(queryToken.error.message));
@@ -50,6 +55,14 @@ export default function Artist() {
         staleTime: 3300000,
     });
 
+    const { data: likeData, refetch: likeDataRefetch } = useQuery({
+        queryKey: ["artist", "like", artistId],
+        queryFn: () =>
+            isLikeArtist(userData?.id.$oid, artistId ? artistId : ""),
+        staleTime: 1000 * 60 * 60 * 24,
+        enabled: userData && artistId ? true : false,
+    });
+
     if (artistIsLoading) {
         return (
             <div
@@ -67,6 +80,36 @@ export default function Artist() {
         dispatch(setError(artistError.message));
         navigate("/Error");
     }
+
+    const handleLikeClick = async () => {
+        if (!session || !userData || !artistId) {
+            return alert("In order to like an artist, please log in first.");
+        }
+
+        try {
+            await likeArtist(session?.session_id, artistId);
+            queryClient.invalidateQueries({
+                queryKey: ["artist", "like", artistId],
+            });
+            queryClient.invalidateQueries({queryKey: ["likedArtist", userData?.id.$oid]})
+            likeDataRefetch();
+        } catch (e: any) {}
+    };
+
+    const handleDislikeClick = async () => {
+        if (!session || !userData || !artistId) {
+            return alert("In order to dislike an artist, please log in first.");
+        }
+
+        try {
+            await dislikeArtist(session?.session_id, artistId);
+            queryClient.invalidateQueries({
+                queryKey: ["artist", "like", artistId],
+            });
+            queryClient.invalidateQueries({queryKey: ["likedArtist", userData?.id.$oid]})
+            likeDataRefetch();
+        } catch (e: any) {}
+    };
 
     return (
         <div id="mv-artist-page">
@@ -99,6 +142,23 @@ export default function Artist() {
                             ? artistData.data.genres.join(", ")
                             : "unknow"}
                     </p>
+                    {userData && userData?.role === "fan" && <button
+                        
+                        onClick={() => {
+                            likeData?.like
+                                ? handleDislikeClick()
+                                : handleLikeClick();
+                        }}
+                        className="btn"
+                        style={{width: "fit-content"}}
+                    >
+                        {likeData?.like ? (
+                            <FaHeart className="text-danger" />
+                        ) : (
+                            <FaRegHeart />
+                        )}
+                     
+                    </button>}
                 </div>
             </div>
             <div className="m-2">

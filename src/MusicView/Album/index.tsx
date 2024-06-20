@@ -67,9 +67,6 @@ export default function Album() {
 
     return (
         <div id="mv-album-page">
-            <h1>Album</h1>
-            <Link to={"/Search"}>Search</Link>
-
             <div id="mv-album-image" className="d-flex m-2">
                 <img
                     className="me-2 rounded-4"
@@ -80,7 +77,7 @@ export default function Album() {
                             : defaultImage
                     }
                 />
-                <div>
+                <div className="mt-4">
                     <p className="mb-2">Album</p>
                     <h2>{albumData?.data.name}</h2>
                     <p>

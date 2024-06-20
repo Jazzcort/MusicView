@@ -5,3 +5,14 @@
 .mv-album-artist-detail:hover {
     text-decoration: underline;
 }
+
+#mv-album-page .comment-button {
+    background-color: var(--mv-button-color);
+    color: floralwhite;
+    font-weight: 600;
+}
+
+#mv-album-page .comment-button:hover {
+    background-color: antiquewhite;
+    color:black;
+}

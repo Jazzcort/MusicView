@@ -8,12 +8,12 @@ import { setError } from "../Error/errorReducer";
 import TracksResult from "./TracksResult";
 import useQueryToken from "../../hook/useQueryToken";
 import { setQuery, setResult } from "./searchReducer";
-import "./styles.css"
+import "./styles.css";
 
 export default function Search() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {query, result} = useSelector((state: any) => state.searchReducer);
+    const { query, result } = useSelector((state: any) => state.searchReducer);
 
     const {
         data: token,
@@ -37,21 +37,25 @@ export default function Search() {
     };
 
     return (
-        <div id="mv-search" className="p-2">
+        <div id="mv-search" className="p-2 d-flex flex-column">
             <h1>Search for some music</h1>
-            <input
-                className="form-control"
-                value={query}
-                onChange={(e) => dispatch(setQuery(e.target.value))}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                        handleSearchClick();
-                    }
-                }}
-            />
-            <button className="btn btn-primary" onClick={handleSearchClick}>
-                Search
-            </button>
+            <div className="d-flex mb-3">
+                <input
+                    className="form-control"
+                    value={query}
+                    onChange={(e) => dispatch(setQuery(e.target.value))}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleSearchClick();
+                        }
+                    }}
+                    style={{borderRadius: "10px 0 0 10px"}}
+                />
+                <button className="btn btn-primary" onClick={handleSearchClick} style={{borderRadius: "0 10px 10px 0"}}>
+                    Search
+                </button>
+            </div>
+
             <ArtistResult
                 artists={result.artists ? result.artists.items : []}
             />

@@ -21,7 +21,7 @@ function Album({ album }: { album: any }) {
                 className="card-img-top"
                 style={{ height: "220px" }}
             />
-            <div className="card-body">
+            <div className="card-body mv-search-card">
                 <h5 className="card-title">{album.name}</h5>
                 <p className="card-text">{album.release_date.slice(0, 4)} <LuDot /> {album.artists[0].name}</p>
                 <Link className="mv-search-button btn" to={`/Album/${album.id}`}>To Album</Link>

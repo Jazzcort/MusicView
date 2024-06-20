@@ -9,6 +9,7 @@ export default function AlbumComments() {
     const { albumId } = useParams();
     const [comment, setComment] = useState("");
     const queryClient = useQueryClient();
+    const [showTextarea, setShowTextarea] = useState(false);
     const { data: session } = useSession();
     const { data: userData, isFetched: userDataIsFatched } = useUser(
         session?.session_id
@@ -46,18 +47,25 @@ export default function AlbumComments() {
 
     return (
         <div className="m-2">
-            {userDataIsFatched && userData && (
-                <div>
-                    <label htmlFor="mv-artist-comments-text" className="me-2">
-                        Express your thoughts
-                    </label>
-                    <button
-                        onClick={handleSubmitClick}
-                        className="btn btn-sm btn-primary"
-                    >
-                        Submit
-                    </button>
-                    <br />
+            {!showTextarea && (
+                <button
+                    onClick={() => {
+                        if (!userData) {
+                            return alert(
+                                "In order to leave comments, please log in first."
+                            );
+                        }
+
+                        setComment("");
+                        setShowTextarea(true);
+                    }}
+                    className="btn comment-button"
+                >
+                    Leave a comment
+                </button>
+            )}
+            {userDataIsFatched && userData && showTextarea && (
+                <div className="mb-2">
                     <div className="d-flex">
                         <textarea
                             id="mv-artist-comments-text"
@@ -66,6 +74,25 @@ export default function AlbumComments() {
                             onChange={(e) => setComment(e.target.value)}
                             style={{ height: "75px" }}
                         ></textarea>
+                    </div>
+                    <div className="d-flex mt-2">
+                        <button
+                            onClick={() => {
+                                handleSubmitClick()
+                                setShowTextarea(false)
+                            }}
+                            className="btn btn-sm comment-button me-2"
+                        >
+                            Submit
+                        </button>
+                        <button
+                            onClick={() => {
+                                setShowTextarea(false);
+                            }}
+                            className="btn btn-sm btn-warning fw-semibold"
+                        >
+                            Cancle
+                        </button>
                         <div className="flex-grow-0 flex-sm-grow-1"></div>
                     </div>
                 </div>
@@ -73,7 +100,10 @@ export default function AlbumComments() {
 
             {commentsData?.map((item: any) => (
                 <div key={item._id.$oid} className="m-2">
-                    <Comment refetchComments={refetch} commentId={item._id.$oid}/>
+                    <Comment
+                        refetchComments={refetch}
+                        commentId={item._id.$oid}
+                    />
                 </div>
             ))}
         </div>
