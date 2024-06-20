@@ -86,7 +86,7 @@ export default function Profile() {
                 </div>
             </div>
             {likedArtist && likedArtist.length !== 0 && <h2 className="m-2">Recently Liked</h2>}
-            <div className="d-flex">
+            <div className="d-flex flex-wrap">
                 {likedArtist &&
                     likedArtist.map((item: any) => (
                         <Artist key={item} artistId={item} />
