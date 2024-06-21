@@ -4,7 +4,7 @@ export default function TracksResult({ tracks }: { tracks: any[] }) {
     return (
         <>
             {tracks.length !== 0 && <h2>Tracks</h2>}
-            <div id="mv-search-result-track" className="d-flex flex-wrap">
+            <div id="mv-search-result-track" className="d-flex flex-column flex-sm-row flex-wrap">
                 {tracks.map((item) => (
                     <Track key={item.id} track={item} />
                 ))}
@@ -15,7 +15,7 @@ export default function TracksResult({ tracks }: { tracks: any[] }) {
 
 function Track({ track }: { track: any }) {
     return (
-        <div className="card m-2" style={{ width: "250px" }}>
+        <div className="card m-2 track-square">
             <img
                 src={
                     track.album?.images[0]
@@ -23,11 +23,10 @@ function Track({ track }: { track: any }) {
                         : "/images/logic-board.jpg"
                 }
                 className="card-img-top"
-                style={{ height: "220px" }}
             />
             <div className="card-body mv-search-card">
-                <h5 className="card-title">{track.name}</h5>
-                <p className="card-text">
+                <h5 className="card-title overflow-x-hidden">{track.name}</h5>
+                <p className="card-text overflow-x-hidden">
                     {track.album?.name ? track.album.name : "unknown"} <LuDot />{" "}
                     {track.artists[0] ? track.artists[0].name : "unknown"}{" "}
                 </p>

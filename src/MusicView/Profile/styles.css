@@ -13,16 +13,33 @@
     background-color: floralwhite;
 }
 
-#mv-profile .profile-artist-img {
-    width: 250px;
-    height: 250px;
-
+#mv-profile .profile-artist {
+    width: 252px;
+    text-wrap: nowrap;
 }
 
+#mv-profile .profile-artist > img {
+    width: 250px;
+    height: 250px;
+}
+
+#mv-profile .profile-detail {
+    margin-left: 2em;
+}
+
+
 @media screen and (max-width: 576px) {
-    #mv-profile .profile-artist-img {
+    #mv-profile .profile-artist {
+        width: 342px;
+    }
+
+    #mv-profile .profile-artist > img {
         height: 340px;
         width: 340px;
-    
-    } 
+    }
+
+    #mv-profile .profile-detail {
+        align-self: start;
+        margin-left: 2em;
+    }
 }

@@ -60,8 +60,6 @@ export default function Profile() {
 
     return (
         <div id="mv-profile">
-            <h1 className="m-2">Profile</h1>
-
             <div>
                 <div id="mv-profile-image" className="d-flex flex-column flex-sm-row align-items-center align-items-sm-start m-2">
                     <img
@@ -72,12 +70,12 @@ export default function Profile() {
 
                     {(useDataIsFetched && !userData) ||
                     userData?.id.$oid !== profileData?.id.$oid ? (
-                        <div className="mt-2">
+                        <div className="mt-2 profile-detail">
                             <h2>{profileData?.username}</h2>
                             <p className="ms-4">Role: {profileData?.role}</p>
                         </div>
                     ) : (
-                        <div className="mt-2">
+                        <div className="mt-2 profile-detail">
                             <h2>{userData?.username}</h2>
                             <p className="ms-4">Email: {userData?.email}</p>
                             <p className="ms-4">Role: {userData?.role}</p>

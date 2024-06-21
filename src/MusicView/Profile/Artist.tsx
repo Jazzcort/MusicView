@@ -17,17 +17,17 @@ export default function Artist({ artistId }: { artistId: string }) {
     }
 
     return (
-        <div className="card m-2" >
+        <div className="card m-2 profile-artist" >
             <img
                 src={
                     artist.data?.images[0]
                         ? artist.data.images[0].url
                         : "/images/logic-board.jpg"
                 }
-                className="card-img-top profile-artist-img"
+                className="card-img-top"
             />
             <div className="mv-search-card card-body">
-                <h5 className="card-title">{artist.data?.name}</h5>
+                <h5 className="card-title overflow-x-hidden">{artist.data?.name}</h5>
                 <p className="card-text">Artist</p>
                 <Link
                     to={`/Artist/${artist.data?.id}`}

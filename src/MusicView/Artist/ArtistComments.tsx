@@ -109,6 +109,8 @@ export default function ArtistComments() {
                     />
                 </div>
             ))}
+            <br />
+            <br />
         </div>
     );
 }

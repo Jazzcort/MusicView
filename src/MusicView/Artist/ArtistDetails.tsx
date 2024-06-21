@@ -120,12 +120,12 @@ export default function ArtistDetails() {
                     )}
             </div>
             <h3 className="m-2 mt-4">Albums</h3>
-            <div id="mv-artist-album" className="d-flex flex-wrap m-2">
+            <div id="mv-artist-album" className="d-flex flex-column flex-sm-row flex-wrap m-2">
                 {albumData?.data.items.map((album: any) => (
                     <div
                         key={album.id}
-                        className="d-flex flex-column m-2 overflow-x-hidden text-nowrap"
-                        style={{ width: "200px" }}
+                        className="d-flex flex-column m-2 overflow-x-hidden text-nowrap album-square"
+                        // style={{ width: "200px" }}
                     >
                         <img
                             className="rounded-4"

@@ -6,10 +6,73 @@
 
 #mv-search .mv-search-button:hover {
     background-color: antiquewhite;
-    color:black;
+    color: black;
 }
 
 #mv-search .mv-search-card {
     background-color: floralwhite;
 }
 
+#mv-search-result-album .album-square {
+    width: 252px;
+    text-wrap: nowrap;
+}
+
+#mv-search-result-album .album-square>img {
+    width: 250px;
+    height: 250px;
+}
+
+#mv-search-result-artist .artist-square {
+    width: 252px;
+    text-wrap:nowrap;
+}
+
+#mv-search-result-artist .artist-square>img {
+    width: 250px;
+    height: 250px;
+    
+}
+
+#mv-search-result-track .track-square {
+    width: 252px;
+    text-wrap: nowrap;
+}
+
+#mv-search-result-track .track-square>img {
+    width: 250px;
+    height: 250px
+}
+
+@media screen and (max-width: 576px) {
+    #mv-search-result-album .album-square {
+        width: 342px;
+        align-self: center;
+    }
+
+    #mv-search-result-album .album-square>img {
+        width: 340px;
+        height: 340px;
+    }
+
+    #mv-search-result-artist .artist-square {
+        width: 342px;
+        align-self: center;
+    }
+
+    #mv-search-result-artist .artist-square>img {
+        width: 340px;
+        height: 340px;
+        
+    }
+
+    #mv-search-result-track .track-square {
+        width: 342px;
+        align-self: center;
+    }
+
+    #mv-search-result-track .track-square>img {
+        width: 340px;
+        height: 340px
+    }
+}

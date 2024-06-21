@@ -86,9 +86,9 @@ export default function AlbumDetails() {
                     className="mv-album-track d-flex align-items-center mb-2 ms-2"
                     onClick={() => handleTrackClick(track.preview_url)}
                 >
-                    <span className="me-2">{track.track_number}</span>
-                    <span style={{ width: "100%" }}>{track.name}</span>
-                    <span className="me-4">
+                    <span style={{width: "25px"}} className="me-2 fw-semibold">{track.track_number}</span>
+                    <span className="fw-semibold" style={{ width: "100%" }}>{track.name}</span>
+                    <span className="me-4 fw-semibold">
                         {getDurationFormat(track.duration_ms)}
                     </span>
                 </div>

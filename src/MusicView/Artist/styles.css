@@ -22,3 +22,14 @@
         margin-right: none;
     }
 }
+
+#mv-artist-album .album-square {
+    width: 200px;
+}
+
+@media screen and (max-width: 576px) {
+    #mv-artist-album .album-square {
+        width: 340px;
+        align-self: center;
+    }
+}
