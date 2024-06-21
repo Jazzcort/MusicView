@@ -15,11 +15,13 @@
 
 #mv-profile .profile-artist-img {
     width: 250px;
+    height: 250px;
 
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 576px) {
     #mv-profile .profile-artist-img {
+        height: 400px;
         width: 400px;
     
     } 
