@@ -123,7 +123,7 @@ export default function Artist() {
                     }
                     style={{ width: "320px" }}
                 />
-                <div className="d-flex flex-column mt-4">
+                <div className="d-flex flex-column align-self-start mt-4 ms-4">
                     <p className="mb-2">artist</p>
                     <h2>
                         {artistData?.data.name

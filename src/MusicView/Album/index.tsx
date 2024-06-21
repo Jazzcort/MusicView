@@ -77,7 +77,7 @@ export default function Album() {
                             : defaultImage
                     }
                 />
-                <div className="mt-4">
+                <div className="mt-4 align-self-start ms-4">
                     <p className="mb-2">Album</p>
                     <h2>{albumData?.data.name}</h2>
                     <p>
