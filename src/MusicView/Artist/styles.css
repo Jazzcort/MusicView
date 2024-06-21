@@ -10,5 +10,15 @@
 
 #mv-artist-page .comment-button:hover {
     background-color: antiquewhite;
-    color:black;
+    color: black;
+}
+
+#mv-artist-image img {
+    margin-right: 1rem;
+}
+
+@media screen and (max-width: 576px) {
+    #mv-artist-image img {
+        margin-right: none;
+    }
 }

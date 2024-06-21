@@ -115,13 +115,13 @@ export default function Artist() {
         <div id="mv-artist-page">
             <div id="mv-artist-image" className="d-flex flex-column flex-sm-row m-2 align-items-center">
                 <img
-                    className="me-5 rounded-4"
+                    className="rounded-4"
                     src={
                         artistData?.data.images[0]
                             ? artistData?.data.images[0].url
                             : "/images/logic-board.jpg"
                     }
-                    style={{ height: "320px" }}
+                    style={{ width: "320px" }}
                 />
                 <div className="d-flex flex-column mt-4">
                     <p className="mb-2">artist</p>
