@@ -63,21 +63,21 @@ export default function Profile() {
             <h1 className="m-2">Profile</h1>
 
             <div>
-                <div id="mv-profile-image" className="d-flex m-2">
+                <div id="mv-profile-image" className="d-flex flex-column flex-sm-row align-items-center align-items-sm-start m-2">
                     <img
                         className="me-2 rounded-4"
-                        style={{ height: "320px" }}
+                        style={{ width: "320px" }}
                         src={defaultImage}
                     />
 
                     {(useDataIsFetched && !userData) ||
                     userData?.id.$oid !== profileData?.id.$oid ? (
-                        <div>
+                        <div className="mt-2">
                             <h2>{profileData?.username}</h2>
                             <p className="ms-4">Role: {profileData?.role}</p>
                         </div>
                     ) : (
-                        <div>
+                        <div className="mt-2">
                             <h2>{userData?.username}</h2>
                             <p className="ms-4">Email: {userData?.email}</p>
                             <p className="ms-4">Role: {userData?.role}</p>
@@ -86,7 +86,7 @@ export default function Profile() {
                 </div>
             </div>
             {likedArtist && likedArtist.length !== 0 && <h2 className="m-2">Recently Liked</h2>}
-            <div className="d-flex flex-wrap">
+            <div className="d-flex flex-column flex-sm-row align-items-center flex-wrap">
                 {likedArtist &&
                     likedArtist.map((item: any) => (
                         <Artist key={item} artistId={item} />

@@ -13,19 +13,18 @@ export default function Artist({ artistId }: { artistId: string }) {
     });
 
     if (!artist || artistIsLoading) {
-        return null;
+        return null
     }
 
     return (
-        <div className="card m-2" style={{ width: "250px" }}>
+        <div className="card m-2" >
             <img
                 src={
                     artist.data?.images[0]
                         ? artist.data.images[0].url
                         : "/images/logic-board.jpg"
                 }
-                className="card-img-top"
-                style={{ height: "220px" }}
+                className="card-img-top profile-artist-img"
             />
             <div className="mv-search-card card-body">
                 <h5 className="card-title">{artist.data?.name}</h5>

@@ -12,3 +12,15 @@
 #mv-profile .mv-search-card {
     background-color: floralwhite;
 }
+
+#mv-profile .profile-artist-img {
+    width: 250px;
+
+}
+
+@media screen and (max-width: 450px) {
+    #mv-profile .profile-artist-img {
+        width: 400px;
+    
+    } 
+}

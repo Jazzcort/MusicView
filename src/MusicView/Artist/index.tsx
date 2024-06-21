@@ -113,8 +113,7 @@ export default function Artist() {
 
     return (
         <div id="mv-artist-page">
-            {/* <h1>Artist</h1> */}
-            <div id="mv-artist-image" className="d-flex m-2">
+            <div id="mv-artist-image" className="d-flex flex-column flex-sm-row m-2 align-items-center">
                 <img
                     className="me-5 rounded-4"
                     src={

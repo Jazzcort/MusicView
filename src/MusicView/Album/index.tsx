@@ -67,7 +67,7 @@ export default function Album() {
 
     return (
         <div id="mv-album-page">
-            <div id="mv-album-image" className="d-flex m-2">
+            <div id="mv-album-image" className="d-flex flex-column flex-sm-row align-items-center align-items-sm-start m-2">
                 <img
                     className="me-2 rounded-4"
                     style={{ height: "320px" }}
