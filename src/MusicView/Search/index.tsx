@@ -8,7 +8,7 @@ import { setError } from "../Error/errorReducer";
 import TracksResult from "./TracksResult";
 import useQueryToken from "../../hook/useQueryToken";
 import { setQuery, setResult, setType } from "./searchReducer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { checkResult } from "../../helper";
 import { isBlank } from "../../helper";
 import "./styles.css";
@@ -17,6 +17,7 @@ export default function Search() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [searched, setSearched] = useState(false);
     const { query, result, type } = useSelector(
         (state: any) => state.searchReducer
     );
@@ -43,7 +44,6 @@ export default function Search() {
 
                 try {
                     const res = await search(params_query, params_type? params_type : "", token);
-                    // setSearchParams({ query: query });
                     dispatch(setResult(res.data));
                 } catch (e: any) {}
             }
@@ -75,25 +75,13 @@ export default function Search() {
 
         
     }, []);
-    // useEffect(() => {
-    //     if (!isBlank(searchParams.get("query"))) {
-
-    //     }
-    // }, [searchParams.get("query")])
 
     const handleSearchClick = async () => {
         if (!isBlank(query)) {
             setSearchParams({ query: query, type: type });
+            setSearched(true);
         }
 
-        // try {
-        //     const res = await search(query ? query : "hot", "", token);
-
-        //     dispatch(setResult(res.data));
-        // } catch (e: any) {
-        //     setError(e.message);
-        //     navigate("/Error");
-        // }
     };
 
     return (
@@ -142,7 +130,7 @@ export default function Search() {
             />
             <AlbumsResult albums={result.albums ? result.albums.items : []} />
             <TracksResult tracks={result.tracks ? result.tracks.items : []} />
-            {!checkResult(result) && <h2>No Result</h2>}
+            {!checkResult(result) && searched && <h2>No Result</h2>}
         </div>
     );
 }
