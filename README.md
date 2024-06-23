@@ -45,4 +45,4 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-<image src="Design.pdf" />
+![Design UML](https://github.com/Jazzcort/MusicView/blob/main/Design.pdf)
