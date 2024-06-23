@@ -44,6 +44,7 @@ export default function Search() {
 
                 try {
                     const res = await search(params_query, params_type? params_type : "", token);
+                    setSearched(true)
                     dispatch(setResult(res.data));
                 } catch (e: any) {}
             }
@@ -79,7 +80,6 @@ export default function Search() {
     const handleSearchClick = async () => {
         if (!isBlank(query)) {
             setSearchParams({ query: query, type: type });
-            setSearched(true);
         }
 
     };
