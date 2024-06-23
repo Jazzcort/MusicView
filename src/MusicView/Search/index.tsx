@@ -9,6 +9,7 @@ import TracksResult from "./TracksResult";
 import useQueryToken from "../../hook/useQueryToken";
 import { setQuery, setResult, setType } from "./searchReducer";
 import { useEffect } from "react";
+import { checkResult } from "../../helper";
 import { isBlank } from "../../helper";
 import "./styles.css";
 
@@ -19,10 +20,6 @@ export default function Search() {
     const { query, result, type } = useSelector(
         (state: any) => state.searchReducer
     );
-    // console.log(searchParams.get("query"));
-    // console.log(query, "from redux");
-    // console.log(isBlank(" "));
-    // console.log(isBlank(searchParams.get("query")));
 
     const {
         data: token,
@@ -145,6 +142,7 @@ export default function Search() {
             />
             <AlbumsResult albums={result.albums ? result.albums.items : []} />
             <TracksResult tracks={result.tracks ? result.tracks.items : []} />
+            {!checkResult(result) && <h2>No Result</h2>}
         </div>
     );
 }
