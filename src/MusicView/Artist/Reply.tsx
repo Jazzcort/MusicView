@@ -100,12 +100,12 @@ export default function Reply({
             return alert("In order to dislike a comment, please log in first.");
         }
         try {
-            await dislikes(session?.session_id, reply?._id.$oid, "comment");
+            await dislikes(session?.session_id, reply?._id.$oid, "reply");
             queryClient.invalidateQueries({
                 queryKey: ["likes", reply?._id.$oid],
             });
             queryClient.invalidateQueries({
-                queryKey: ["comments", comment_id],
+                queryKey: ["replies", comment_id],
             });
             refetch();
             likeDataRefetch();
