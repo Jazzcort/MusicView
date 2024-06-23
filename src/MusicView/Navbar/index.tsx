@@ -10,6 +10,7 @@ export default function Navbar() {
     const { data, isPending } = useSession();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    // console.log(query, "query")
 
     const { data: userData } = useUser(data?.session_id);
 
@@ -21,7 +22,7 @@ export default function Navbar() {
             <Link className="mv-navbar-link m-2" to={"/Home"}>
                 Home
             </Link>
-            <Link className="mv-navbar-link m-2" to={"/Search"}>
+            <Link className="mv-navbar-link m-2" to={`/Search`}>
                 Search
             </Link>
             <div style={{ width: "100%" }}></div>

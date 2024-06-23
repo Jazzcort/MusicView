@@ -45,3 +45,19 @@ export async function searchOtherUser(user_id: string | undefined) {
     );
     return res.data;
 }
+
+export async function updateUser(session_id: string, updatedForm: any) {
+    const parameters = {
+        method: "put",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: session_id,
+        },
+        url: `${REMOTE_SERVER}/users`,
+        data: updatedForm,
+        timeout: 20000,
+    };
+
+    const res = await axios(parameters);
+    return res.data;
+}

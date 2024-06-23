@@ -2,23 +2,39 @@ import useUser from "../../hook/useUser";
 import useSession from "../../hook/useSession";
 import { useNavigate, useParams } from "react-router-dom";
 import { Suspense, useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { searchOtherUser } from "../api/users";
 import { setError } from "../Error/errorReducer";
 import { UseDispatch, useDispatch } from "react-redux";
 import { getLikedArtistByUserId } from "../api/like_artists";
+import { FaPencil } from "react-icons/fa6";
 import Artist from "./Artist";
-import "./styles.css"
+import { updateUser } from "../api/users";
+import "./styles.css";
 const defaultImage = "/images/logic-board.jpg";
+const usernameRegex = /^[a-zA-Z0-9._-]{8,}/;
+const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 export default function Profile() {
     const { userId } = useParams();
-    // const [prefile, setProfile] = useState(null);
+    const [errorMsg, setErrorMsg] = useState("");
+    const [updatedUsername, setUpdatedUsername] = useState({
+        isEditing: false,
+        username: "",
+    });
+    const [updatedEmail, setUpdatedEmail] = useState({
+        isEditing: false,
+        email: "",
+    });
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { data: session } = useSession();
-    const { data: userData, isFetched: useDataIsFetched } = useUser(
-        session?.session_id
-    );
+    const queryClient = useQueryClient();
+    const { data: session, refetch: sessionRefetch } = useSession();
+    const {
+        data: userData,
+        isFetched: useDataIsFetched,
+        refetch: userDataRefetch,
+    } = useUser(session?.session_id);
 
     const {
         data: profileData,
@@ -58,10 +74,68 @@ export default function Profile() {
         navigate("/Error");
     }
 
+    const handleUsernameUpdate = async () => {
+        if (userData?.username === updatedUsername.username) {
+            setUpdatedUsername((old) => ({ ...old, isEditing: false }));
+            setErrorMsg("");
+            return;
+        }
+
+        if (!updatedUsername.username.match(usernameRegex)) {
+            setErrorMsg(
+                "Username needs to be at least 8 character long (a-z, A-Z, 0-9, ., _, -)"
+            );
+            return;
+        }
+
+        try {
+            await updateUser(session?.session_id, {
+                username: updatedUsername.username,
+            });
+            queryClient.invalidateQueries({ queryKey: ["user"] });
+            userDataRefetch();
+            sessionRefetch();
+            setErrorMsg("");
+            setUpdatedUsername((old) => ({ ...old, isEditing: false }));
+        } catch (e: any) {
+            setErrorMsg("This username has been taken");
+        }
+    };
+
+    const handleEmailUpdate = async () => {
+        if (userData?.email === updatedEmail.email) {
+            setUpdatedEmail((old) => ({ ...old, isEditing: false }));
+            setErrorMsg("");
+            return;
+        }
+
+        if (!updatedEmail.email.match(emailRegex)) {
+            setErrorMsg("Please enter a valid email");
+            return;
+        }
+
+        try {
+            await updateUser(session?.session_id, {
+                email: updatedEmail.email.toLowerCase(),
+            });
+            localStorage.setItem("mv_user_email", updatedEmail.email);
+            queryClient.invalidateQueries({ queryKey: ["session"] });
+            queryClient.invalidateQueries({ queryKey: ["user"] });
+            userDataRefetch();
+            setErrorMsg("");
+            setUpdatedEmail((old) => ({ ...old, isEditing: false }));
+        } catch (e: any) {
+            setErrorMsg("This email has been taken");
+        }
+    };
+
     return (
         <div id="mv-profile">
             <div>
-                <div id="mv-profile-image" className="d-flex flex-column flex-sm-row align-items-center align-items-sm-start m-2">
+                <div
+                    id="mv-profile-image"
+                    className="d-flex flex-column flex-sm-row align-items-center align-items-sm-start m-2"
+                >
                     <img
                         className="me-2 rounded-4"
                         style={{ width: "320px" }}
@@ -76,14 +150,111 @@ export default function Profile() {
                         </div>
                     ) : (
                         <div className="mt-2 profile-detail">
-                            <h2>{userData?.username}</h2>
-                            <p className="ms-4">Email: {userData?.email}</p>
+                            {updatedUsername.isEditing && (
+                                <div className="d-flex mb-2">
+                                    <input
+                                        type="text"
+                                        className="form-control me-2"
+                                        value={updatedUsername.username}
+                                        onChange={(e) => {
+                                            setUpdatedUsername((old) => ({
+                                                ...old,
+                                                username: e.target.value,
+                                            }));
+                                        }}
+                                    />
+                                    <button
+                                        onClick={handleUsernameUpdate}
+                                        className="btn btn-sm mv-search-button me-2"
+                                    >
+                                        Confirm
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setErrorMsg("");
+                                            setUpdatedUsername((old) => ({
+                                                ...old,
+                                                isEditing: false,
+                                            }));
+                                        }}
+                                        className="btn btn-sm btn-warning"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                            {!updatedUsername.isEditing && (
+                                <h2>
+                                    {userData?.username}
+                                    <FaPencil
+                                        onClick={() => {
+                                            setUpdatedUsername({
+                                                username: userData?.username,
+                                                isEditing: true,
+                                            });
+                                        }}
+                                        className="ms-3 mb-1 fs-5 text-primary"
+                                    />
+                                </h2>
+                            )}
+                            {updatedEmail.isEditing && (
+                                <div className="d-flex mb-2">
+                                    <input
+                                        type="text"
+                                        className="form-control me-2"
+                                        value={updatedEmail.email}
+                                        onChange={(e) => {
+                                            setUpdatedEmail((old) => ({
+                                                ...old,
+                                                email: e.target.value,
+                                            }));
+                                        }}
+                                    />
+                                    <button
+                                        onClick={handleEmailUpdate}
+                                        className="btn btn-sm mv-search-button me-2"
+                                    >
+                                        Confirm
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setErrorMsg("");
+                                            setUpdatedEmail((old) => ({
+                                                ...old,
+                                                isEditing: false,
+                                            }));
+                                        }}
+                                        className="btn btn-sm btn-warning"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                            {!updatedEmail.isEditing && (
+                                <p className="ms-4">
+                                    {`Email: ${userData?.email}`}
+                                    <FaPencil
+                                        onClick={() => {
+                                            setUpdatedEmail({
+                                                email: userData?.email,
+                                                isEditing: true,
+                                            });
+                                        }}
+                                        className=" ms-3 mb-1 fs-5 text-primary"
+                                    />
+                                </p>
+                            )}
                             <p className="ms-4">Role: {userData?.role}</p>
+                            {errorMsg && (
+                                <p className="text-danger fw-bold">{` - ${errorMsg}`}</p>
+                            )}
                         </div>
                     )}
                 </div>
             </div>
-            {likedArtist && likedArtist.length !== 0 && <h2 className="m-2">Recently Liked</h2>}
+            {likedArtist && likedArtist.length !== 0 && (
+                <h2 className="m-2">Recently Liked</h2>
+            )}
             <div className="d-flex flex-column flex-sm-row align-items-center flex-wrap">
                 {likedArtist &&
                     likedArtist.map((item: any) => (

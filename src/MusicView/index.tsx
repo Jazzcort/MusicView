@@ -21,6 +21,7 @@ import Artist from "./Artist";
 import Navbar from "./Navbar";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import useSession from "../hook/useSession";
+import Credit from "./Credit";
 export default function MusicView() {
 
     return (
@@ -37,7 +38,9 @@ export default function MusicView() {
                         <Route path="/Album/:albumId/*" element={<Album />} />
                         <Route path="/Artist/:artistId/*" element={<Artist />} />
                         <Route path="/Error" element={<Error />} />
+                        <Route path="/Credit" element={<Credit />} />
                         <Route path="*" element={<Navigate to={"Home"}/>}/>
+                        
                     </Routes>
                 </div>
             </Provider>

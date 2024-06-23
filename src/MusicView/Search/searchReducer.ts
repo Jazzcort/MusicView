@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
 const initialState = {
     query: "",
+    type: "",
     result: <any>{},
 };
 
@@ -13,11 +13,14 @@ const querySlice = createSlice({
         setQuery: (state, { payload: query }) => {
             state.query = query;
         },
-        setResult: (state, {payload: result}) => {
+        setResult: (state, { payload: result }) => {
             state.result = result;
-        }
+        },
+        setType: (state, { payload: type }) => {
+            state.type = type;
+        },
     },
 });
 
-export const { setQuery, setResult } = querySlice.actions;
+export const { setQuery, setResult, setType } = querySlice.actions;
 export default querySlice.reducer;

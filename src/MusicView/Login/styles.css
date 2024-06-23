@@ -26,3 +26,9 @@
 .mv-login-input-box-button button:hover {
     background-color: wheat;
 }
+
+@media screen and (max-width: 576px) {
+    .mv-login-input-box {
+        width: 80%;
+    }
+}
