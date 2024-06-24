@@ -29,7 +29,12 @@ export default function Profile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const { data: session, refetch: sessionRefetch } = useSession();
+    const {
+        data: session,
+        refetch: sessionRefetch,
+        isLoading: sessionIsLoading,
+        isFetched: sessionIsFetched,
+    } = useSession();
     const {
         data: userData,
         isFetched: useDataIsFetched,
@@ -55,6 +60,13 @@ export default function Profile() {
         staleTime: 1000 * 60 * 60,
         enabled: profileData ? true : false,
     });
+
+    useEffect(() => {
+        if (!session && !sessionIsLoading) {
+            alert("In order to see the profile, please log in first")
+            navigate("/Search");
+        }
+    }, [sessionIsLoading]);
 
     if (profileDataIsLoading) {
         return (
