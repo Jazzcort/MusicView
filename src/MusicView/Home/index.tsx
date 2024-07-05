@@ -23,8 +23,8 @@ export default function Home() {
             <Link className="mv-home-button btn m-2" to={"/Search"}>
                 Search For Artists, Albums, or Songs
             </Link>
-            <Link to={"/Credit"} className="mv-home-button btn btn-sm m-2">
-                Credit
+            <Link to={"/CodeBase"} className="mv-home-button btn btn-sm m-2">
+                Code Base
             </Link>
 
         </div>

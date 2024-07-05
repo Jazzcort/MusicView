@@ -26,9 +26,13 @@ import { Link } from "react-router-dom";
 export default function Comment({
     commentId,
     refetchComments,
+    handleModelClose,
+    handleModelOpen,
 }: {
     commentId: string;
     refetchComments: () => void;
+    handleModelClose: () => void;
+    handleModelOpen: () => void;
 }) {
     const [showReply, setShowReply] = useState(true);
     const { albumId } = useParams();
@@ -92,7 +96,7 @@ export default function Comment({
 
     const handleLikeClick = async () => {
         if (!session || !comment || !comment._id) {
-            return alert("In order to like a comment, please log in first.");
+            return handleModelOpen();
         }
 
         try {
@@ -124,7 +128,7 @@ export default function Comment({
 
     const handleDislikeClick = async () => {
         if (!session || !comment || !comment._id) {
-            return alert("In order to dislike a comment, please log in first.");
+            return handleModelOpen();
         }
         try {
             await dislikes(session?.session_id, comment?._id.$oid, "comment");
@@ -245,9 +249,7 @@ export default function Comment({
                                 isEditing: true,
                             }));
                         } else {
-                            alert(
-                                "In order to reply a comment, you have to login first."
-                            );
+                            handleModelOpen();
                         }
                     }}
                 >
@@ -330,6 +332,8 @@ export default function Comment({
                                 }
                                 refetch={refetchReplies}
                                 reply={item}
+                                handleModelClose={handleModelClose}
+                                handleModelOpen={handleModelOpen}
                             />
                         </div>
                     ))}

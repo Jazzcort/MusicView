@@ -13,10 +13,14 @@ export default function Reply({
     reply,
     comment_id,
     refetch,
+    handleModelClose,
+    handleModelOpen,
 }: {
     reply: any;
     comment_id: string;
     refetch: () => void;
+    handleModelClose: () => void;
+    handleModelOpen: () => void;
 }) {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
@@ -79,7 +83,7 @@ export default function Reply({
 
     const handleLikeClick = async () => {
         if (!session || !reply || !reply._id) {
-            return alert("In order to like a comment, please log in first.");
+            return handleModelOpen();
         }
 
         try {
@@ -97,7 +101,7 @@ export default function Reply({
 
     const handleDislikeClick = async () => {
         if (!session || !reply || !reply._id) {
-            return alert("In order to dislike a comment, please log in first.");
+            return handleModelOpen();
         }
         try {
             await dislikes(session?.session_id, reply?._id.$oid, "reply");

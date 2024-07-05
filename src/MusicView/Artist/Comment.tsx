@@ -17,16 +17,25 @@ import { IoAddCircleOutline } from "react-icons/io5";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
 import { useState } from "react";
 import Reply from "./Reply";
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
+import LoginForm from "../../components/LoginForm";
+import SignUpForm from "../../components/SignUpForm";
+
 export default function Comments({
     currentUser,
     comment,
     refetch,
     artistId,
+    handleModelClose,
+    handleModelOpen,
 }: {
     currentUser: any;
     comment: any;
     refetch: () => void;
     artistId: string;
+    handleModelClose: () => void;
+    handleModelOpen: () => void;
 }) {
     const [showReply, setShowReply] = useState(true);
 
@@ -56,7 +65,10 @@ export default function Comments({
         enabled: !currentUser?.id || !comment?._id ? false : true,
     });
 
+    // const myModalAlternative = new bootstrap.Modal('#myModal', options)
     // console.log(likeData);
+    const [show, setShow] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
 
     const [content, setContent] = useState({
         content: comment?.content,
@@ -117,7 +129,13 @@ export default function Comments({
     };
 
     const handleReplySubmit = async () => {
-        if (!session || !currentUser || !comment || !comment._id || !reply.content) {
+        if (
+            !session ||
+            !currentUser ||
+            !comment ||
+            !comment._id ||
+            !reply.content
+        ) {
             return;
         }
         try {
@@ -137,7 +155,7 @@ export default function Comments({
 
     const handleLikeClick = async () => {
         if (!session || !comment || !comment._id) {
-            return alert("In order to like a comment, please log in first.");
+            return handleModelOpen();
         }
 
         try {
@@ -155,7 +173,7 @@ export default function Comments({
 
     const handleDislikeClick = async () => {
         if (!session || !comment || !comment._id) {
-            return alert("In order to dislike a comment, please log in first.");
+            return handleModelOpen()
         }
         try {
             await dislikes(session?.session_id, comment?._id.$oid, "comment");
@@ -240,9 +258,7 @@ export default function Comments({
                                 isEditing: true,
                             }));
                         } else {
-                            alert(
-                                "In order to reply a comment, you have to login first."
-                            );
+                            handleModelOpen()
                         }
                     }}
                 >
@@ -301,7 +317,10 @@ export default function Comments({
                             }}
                         ></textarea>
                         <br />
-                        <button onClick={handleReplySubmit} className="btn btn-sm comment-button me-2">
+                        <button
+                            onClick={handleReplySubmit}
+                            className="btn btn-sm comment-button me-2"
+                        >
                             Submit
                         </button>
                         <button
@@ -325,6 +344,8 @@ export default function Comments({
                                 }
                                 refetch={refetchReplies}
                                 reply={item}
+                                handleModelClose={handleModelClose}
+                                handleModelOpen={handleModelOpen}
                             />
                         </div>
                     ))}
@@ -340,6 +361,40 @@ export default function Comments({
                     <IoAddCircleOutline className="fs-5" />
                 )}
             </button>
+
+            {/* <button onClick={() => setShow((old) => !old)}>toggle show</button> */}
+
+            {/* <Modal
+                show={show}
+                onHide={handleModelClose}
+                backdrop="static"
+                centered
+            >
+                <div style={{position: "relative"}}>
+                    <button
+                        onClick={handleModelClose}
+                        style={{
+                            backgroundColor: "white",
+                            position: "absolute",
+                            width: "50px",
+                            marginLeft: "auto",
+                            border: "none",
+                            padding: "10px",
+                            top: 0,
+                            right: 0,
+                            zIndex: 100
+                        }}
+                    >
+                        <FaXmark className="fs-3" />
+                    </button>
+                    <Modal.Body className="d-flex">
+                        {isLogin ? <LoginForm
+                            successfullyLoginFn={handleModelClose}
+                            switchToSignUpFn={() => setIsLogin(false)}
+                        /> : <SignUpForm successfullySignUpFn={handleModelClose} switchToLoginFn={() => setIsLogin(true)}/>}
+                    </Modal.Body>
+                </div>
+            </Modal> */}
         </div>
     );
 }

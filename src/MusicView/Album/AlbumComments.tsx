@@ -5,6 +5,11 @@ import { getCommentsByTargetId, createComment } from "../api/comments";
 import useSession from "../../hook/useSession";
 import useUser from "../../hook/useUser";
 import Comment from "./Comment";
+import Modal from "react-bootstrap/Modal";
+import { FaXmark } from "react-icons/fa6";
+import LoginForm from "../../components/LoginForm";
+import SignUpForm from "../../components/SignUpForm";
+
 export default function AlbumComments() {
     const { albumId } = useParams();
     const [comment, setComment] = useState("");
@@ -21,6 +26,12 @@ export default function AlbumComments() {
         staleTime: 1000 * 30,
         enabled: albumId ? true : false,
     });
+
+    const [show, setShow] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
+
+    const handleModelClose = () => setShow(false);
+    const handleModelOpen = () => setShow(true);
 
     if (!commentsData) {
         return null;
@@ -78,8 +89,8 @@ export default function AlbumComments() {
                     <div className="d-flex mt-2">
                         <button
                             onClick={() => {
-                                handleSubmitClick()
-                                setShowTextarea(false)
+                                handleSubmitClick();
+                                setShowTextarea(false);
                             }}
                             className="btn btn-sm comment-button me-2"
                         >
@@ -103,9 +114,50 @@ export default function AlbumComments() {
                     <Comment
                         refetchComments={refetch}
                         commentId={item._id.$oid}
+                        handleModelClose={handleModelClose}
+                        handleModelOpen={handleModelOpen}
                     />
                 </div>
             ))}
+
+            <Modal
+                show={show}
+                onHide={handleModelClose}
+                backdrop="static"
+                centered
+            >
+                <div style={{ position: "relative" }}>
+                    <button
+                        onClick={handleModelClose}
+                        style={{
+                            backgroundColor: "white",
+                            position: "absolute",
+                            width: "50px",
+                            marginLeft: "auto",
+                            border: "none",
+                            padding: "10px",
+                            top: 0,
+                            right: 0,
+                            zIndex: 100,
+                        }}
+                    >
+                        <FaXmark className="fs-3" />
+                    </button>
+                    <Modal.Body className="d-flex">
+                        {isLogin ? (
+                            <LoginForm
+                                successfullyLoginFn={handleModelClose}
+                                switchToSignUpFn={() => setIsLogin(false)}
+                            />
+                        ) : (
+                            <SignUpForm
+                                successfullySignUpFn={handleModelClose}
+                                switchToLoginFn={() => setIsLogin(true)}
+                            />
+                        )}
+                    </Modal.Body>
+                </div>
+            </Modal>
         </div>
     );
 }

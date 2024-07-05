@@ -2,9 +2,13 @@ import useUser from "../../hook/useUser";
 import useSession from "../../hook/useSession";
 import { createComment, getCommentsByTargetId } from "../api/comments";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Comments from "./Comment";
+import { FaXmark } from "react-icons/fa6";
+import Modal from "react-bootstrap/Modal";
+import LoginForm from "../../components/LoginForm";
+import SignUpForm from "../../components/SignUpForm";
 
 export default function ArtistComments() {
     const { data: session } = useSession();
@@ -25,6 +29,11 @@ export default function ArtistComments() {
         staleTime: 1000 * 30,
         enabled: artistId ? true : false,
     });
+    const [show, setShow] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
+
+    const handleModelClose =  useCallback(() => setShow(false), [setShow]);
+    const handleModelOpen =  useCallback(() => setShow(true), [setShow]);
 
     // console.log(commentsData);
 
@@ -80,8 +89,8 @@ export default function ArtistComments() {
                     <div className="d-flex mt-2">
                         <button
                             onClick={() => {
-                                handleSubmitClick()
-                                setShowTextarea(false)
+                                handleSubmitClick();
+                                setShowTextarea(false);
                             }}
                             className="btn btn-sm comment-button me-2"
                         >
@@ -106,11 +115,51 @@ export default function ArtistComments() {
                         comment={item}
                         refetch={refetch}
                         artistId={artistId ? artistId : ""}
+                        handleModelClose={handleModelClose}
+                        handleModelOpen={handleModelOpen}
                     />
                 </div>
             ))}
             <br />
             <br />
+            <Modal
+                show={show}
+                onHide={handleModelClose}
+                backdrop="static"
+                centered
+            >
+                <div style={{ position: "relative" }}>
+                    <button
+                        onClick={handleModelClose}
+                        style={{
+                            backgroundColor: "white",
+                            position: "absolute",
+                            width: "50px",
+                            marginLeft: "auto",
+                            border: "none",
+                            padding: "10px",
+                            top: 0,
+                            right: 0,
+                            zIndex: 100,
+                        }}
+                    >
+                        <FaXmark className="fs-3" />
+                    </button>
+                    <Modal.Body className="d-flex">
+                        {isLogin ? (
+                            <LoginForm
+                                successfullyLoginFn={handleModelClose}
+                                switchToSignUpFn={() => setIsLogin(false)}
+                            />
+                        ) : (
+                            <SignUpForm
+                                successfullySignUpFn={handleModelClose}
+                                switchToLoginFn={() => setIsLogin(true)}
+                            />
+                        )}
+                    </Modal.Body>
+                </div>
+            </Modal>
         </div>
     );
 }

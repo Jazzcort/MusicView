@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import { LuDot } from "react-icons/lu";
 import { Link, Route, Routes } from "react-router-dom";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import {
-    getArtistById,
-    getArtistTopTracks,
-    getArtistAlbum,
-} from "../api/search";
+import { getArtistById } from "../api/search";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../store";
 import { renewToken } from "../Login/reducer";
@@ -91,7 +86,9 @@ export default function Artist() {
             queryClient.invalidateQueries({
                 queryKey: ["artist", "like", artistId],
             });
-            queryClient.invalidateQueries({queryKey: ["likedArtist", userData?.id.$oid]})
+            queryClient.invalidateQueries({
+                queryKey: ["likedArtist", userData?.id.$oid],
+            });
             likeDataRefetch();
         } catch (e: any) {}
     };
@@ -106,14 +103,19 @@ export default function Artist() {
             queryClient.invalidateQueries({
                 queryKey: ["artist", "like", artistId],
             });
-            queryClient.invalidateQueries({queryKey: ["likedArtist", userData?.id.$oid]})
+            queryClient.invalidateQueries({
+                queryKey: ["likedArtist", userData?.id.$oid],
+            });
             likeDataRefetch();
         } catch (e: any) {}
     };
 
     return (
         <div id="mv-artist-page">
-            <div id="mv-artist-image" className="d-flex flex-column flex-sm-row m-2 align-items-center">
+            <div
+                id="mv-artist-image"
+                className="d-flex flex-column flex-sm-row m-2 align-items-center"
+            >
                 <img
                     className="rounded-4"
                     src={
@@ -141,23 +143,23 @@ export default function Artist() {
                             ? artistData.data.genres.join(", ")
                             : "unknow"}
                     </p>
-                    {userData && userData?.role === "fan" && <button
-                        
-                        onClick={() => {
-                            likeData?.like
-                                ? handleDislikeClick()
-                                : handleLikeClick();
-                        }}
-                        className="btn"
-                        style={{width: "fit-content"}}
-                    >
-                        {likeData?.like ? (
-                            <FaHeart className="text-danger" />
-                        ) : (
-                            <FaRegHeart />
-                        )}
-                     
-                    </button>}
+                    {userData && userData?.role === "fan" && (
+                        <button
+                            onClick={() => {
+                                likeData?.like
+                                    ? handleDislikeClick()
+                                    : handleLikeClick();
+                            }}
+                            className="btn"
+                            style={{ width: "fit-content" }}
+                        >
+                            {likeData?.like ? (
+                                <FaHeart className="text-danger" />
+                            ) : (
+                                <FaRegHeart />
+                            )}
+                        </button>
+                    )}
                 </div>
             </div>
             <div className="m-2">
