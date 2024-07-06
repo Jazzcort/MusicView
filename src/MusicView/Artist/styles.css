@@ -33,3 +33,12 @@
         align-self: center;
     }
 }
+
+.profile-username {
+    text-decoration: none;
+    color: black;
+}
+
+.profile-username:hover {
+    text-decoration: underline;
+}

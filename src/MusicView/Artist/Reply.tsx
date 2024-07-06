@@ -120,14 +120,14 @@ export default function Reply({
         <div className="m-3">
             <h5>
                 {profileData?.role === "artist" && (
-                    <Link to={`/Artist/${profileData?.artist_id}`}>
+                    <Link className="profile-username" to={`/Artist/${profileData?.artist_id}`}>
                         {profileData?.username}
                     </Link>
                 )}
-                {profileData?.role === "fan" && (
-                    <Link to={`/Profile/${profileData?.id.$oid}`}>
+                {profileData?.role === "fan" && ( userData?
+                    <Link className="profile-username" to={`/Profile/${profileData?.id.$oid}`}>
                         {profileData?.username}
-                    </Link>
+                    </Link> :  <span className="profile-username" onClick={handleModelOpen}>{profileData?.username}</span>
                 )}
 
                 {profileData?.role === "admin" && profileData?.username}

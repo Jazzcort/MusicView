@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { getCommentsByTargetId, createComment } from "../api/comments";
 import useSession from "../../hook/useSession";
 import useUser from "../../hook/useUser";
@@ -30,8 +30,8 @@ export default function AlbumComments() {
     const [show, setShow] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
 
-    const handleModelClose = () => setShow(false);
-    const handleModelOpen = () => setShow(true);
+    const handleModelClose = useCallback(() => setShow(false), [setShow]);
+    const handleModelOpen = useCallback(() => setShow(true), [setShow]);
 
     if (!commentsData) {
         return null;

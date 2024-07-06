@@ -194,14 +194,14 @@ export default function Comments({
         <div className="m-2">
             <h4>
                 {profileData?.role === "artist" && (
-                    <Link to={`/Artist/${profileData?.artist_id}`}>
+                    <Link className="profile-username" to={`/Artist/${profileData?.artist_id}`}>
                         {profileData?.username}
                     </Link>
                 )}
-                {profileData?.role === "fan" && (
-                    <Link to={`/Profile/${profileData?.id.$oid}`}>
+                {profileData?.role === "fan" && ( currentUser?
+                    <Link className="profile-username" to={`/Profile/${profileData?.id.$oid}`}>
                         {profileData?.username}
-                    </Link>
+                    </Link> :  <span className="profile-username" onClick={handleModelOpen}>{profileData?.username}</span>
                 )}
 
                 {profileData?.role === "admin" && profileData?.username}

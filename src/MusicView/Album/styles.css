@@ -16,3 +16,12 @@
     background-color: antiquewhite;
     color:black;
 }
+
+.profile-username {
+    text-decoration: none;
+    color: black;
+}
+
+.profile-username:hover {
+    text-decoration: underline;
+}
