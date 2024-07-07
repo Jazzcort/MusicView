@@ -31,7 +31,10 @@ export default function AlbumComments() {
     const [isLogin, setIsLogin] = useState(true);
 
     const handleModelClose = useCallback(() => setShow(false), [setShow]);
-    const handleModelOpen = useCallback(() => setShow(true), [setShow]);
+    const handleModelOpen = useCallback(() => {
+        setShow(true);
+        setIsLogin(true);
+    }, [setShow, setIsLogin]);
 
     if (!commentsData) {
         return null;
@@ -62,9 +65,7 @@ export default function AlbumComments() {
                 <button
                     onClick={() => {
                         if (!userData) {
-                            return alert(
-                                "In order to leave comments, please log in first."
-                            );
+                            return handleModelOpen();
                         }
 
                         setComment("");
@@ -130,6 +131,7 @@ export default function AlbumComments() {
                     <button
                         onClick={handleModelClose}
                         style={{
+                            borderRadius: "20px",
                             backgroundColor: "white",
                             position: "absolute",
                             width: "50px",

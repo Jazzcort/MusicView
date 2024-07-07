@@ -10,6 +10,7 @@ export default function Navbar() {
     const { data, isPending } = useSession();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const { pathname } = useLocation();
     // console.log(query, "query")
 
     const { data: userData } = useUser(data?.session_id);
@@ -41,16 +42,22 @@ export default function Navbar() {
                         </button>
                         <ul className="dropdown-menu">
                             <li>
-                                <a className="dropdown-item" onClick={() => {
-                                    if (!userData) {
-                                        return 
-                                    } else if (userData.role === "fan") {
-                                        navigate(`/Profile/${userData?.id.$oid}`) 
-                                    } else if (userData.role === "artist") {
-                                        navigate(`/Artist/${userData.artist_id}`)}
-                                    }
-                                    
-                                    }>
+                                <a
+                                    className="dropdown-item"
+                                    onClick={() => {
+                                        if (!userData) {
+                                            return;
+                                        } else if (userData.role === "fan") {
+                                            navigate(
+                                                `/Profile/${userData?.id.$oid}`
+                                            );
+                                        } else if (userData.role === "artist") {
+                                            navigate(
+                                                `/Artist/${userData.artist_id}`
+                                            );
+                                        }
+                                    }}
+                                >
                                     Profile
                                 </a>
                             </li>
@@ -79,7 +86,9 @@ export default function Navbar() {
             {isPending && (
                 <button
                     className="mv-navbar-button-right m-2 btn"
-                    onClick={() => navigate("/Login")}
+                    onClick={() =>
+                        navigate("/Login", { state: { pre: pathname } })
+                    }
                 >
                     Login
                 </button>
@@ -87,7 +96,9 @@ export default function Navbar() {
             {isPending && (
                 <button
                     className="mv-navbar-button-right text-nowrap m-2 btn"
-                    onClick={() => navigate("/Login/Signup")}
+                    onClick={() =>
+                        navigate("/Login/Signup", { state: { pre: pathname } })
+                    }
                 >
                     Sign up
                 </button>

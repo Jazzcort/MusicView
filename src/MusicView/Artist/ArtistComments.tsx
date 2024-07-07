@@ -33,7 +33,10 @@ export default function ArtistComments() {
     const [isLogin, setIsLogin] = useState(true);
 
     const handleModelClose =  useCallback(() => setShow(false), [setShow]);
-    const handleModelOpen =  useCallback(() => setShow(true), [setShow]);
+    const handleModelOpen =  useCallback(() => { 
+        setShow(true);
+        setIsLogin(true);
+    }, [setShow, setIsLogin]);
 
     // console.log(commentsData);
 
@@ -62,9 +65,7 @@ export default function ArtistComments() {
                 <button
                     onClick={() => {
                         if (!userData) {
-                            return alert(
-                                "In order to leave comments, please log in first."
-                            );
+                            return handleModelOpen();
                         }
 
                         setComment("");
@@ -132,6 +133,7 @@ export default function ArtistComments() {
                     <button
                         onClick={handleModelClose}
                         style={{
+                            borderRadius: "20px",
                             backgroundColor: "white",
                             position: "absolute",
                             width: "50px",

@@ -1,11 +1,11 @@
 import useUser from "../../hook/useUser";
 import useSession from "../../hook/useSession";
-import { useNavigate, useParams } from "react-router-dom";
-import { Suspense, useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { searchOtherUser } from "../api/users";
 import { setError } from "../Error/errorReducer";
-import { UseDispatch, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getLikedArtistByUserId } from "../api/like_artists";
 import { FaPencil } from "react-icons/fa6";
 import Artist from "./Artist";
