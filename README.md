@@ -1,4 +1,4 @@
-# MusicView (https://musicviewfinal.netlify.app/)
+# MusicView (https://musicview.jazzcort.com)
 
 ## Description
 ### Overview
